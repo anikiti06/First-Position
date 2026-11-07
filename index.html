@@ -1,0 +1,1735 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="First Position: an AI-assisted investing guide that matches beginners to 18 investment types, with guides, a starter plan, market research and a Pro research agent.">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>First Position</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: sticky nav over a single long workbench — rate board hero, then profile → matches → library → plan → analyst → market → method. Risk is the one signature color system: a teal-to-coral spectrum used everywhere risk appears. */
+:root{
+  --paper:#eef2f5; --surface:#ffffff; --sunk:#e3e9ee; --ink:#0f1e2b; --muted:#566878; --line:#cfd8e0;
+  --gold:#c98a00; --gold-soft:#f6e7c1; --btn:#0f1e2b; --btn-fg:#f4f7fa;
+  --r1:#1f8f83; --r2:#5c9e4f; --r3:#c79300; --r4:#d8692f; --r5:#c83b52;
+  --good:#1f8f83; --warn:#c06a12; --bad:#c83b52;
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body:"Public Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --rad:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0c1620; --surface:#13212e; --sunk:#0f1b26; --ink:#e6edf3; --muted:#93a5b6; --line:#243747;
+  --gold:#f0b429; --gold-soft:#3a2f12; --btn:#e6edf3; --btn-fg:#0c1620;
+  --r1:#3cb4a6; --r2:#79bb68; --r3:#e5b120; --r4:#ef8650; --r5:#eb5f74;
+  --good:#3cb4a6; --warn:#eb9a3e; --bad:#eb5f74; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#0c1620; --surface:#13212e; --sunk:#0f1b26; --ink:#e6edf3; --muted:#93a5b6; --line:#243747;
+  --gold:#f0b429; --gold-soft:#3a2f12; --btn:#e6edf3; --btn-fg:#0c1620;
+  --r1:#3cb4a6; --r2:#79bb68; --r3:#e5b120; --r4:#ef8650; --r5:#eb5f74;
+  --good:#3cb4a6; --warn:#eb9a3e; --bad:#eb5f74; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+a{color:inherit}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--surface);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:20px;padding-block:10px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:19px;text-decoration:none;white-space:nowrap}
+.brand-mark{width:26px;height:26px;border-radius:6px;background:linear-gradient(90deg,var(--r1),var(--r2),var(--r3),var(--r4),var(--r5));position:relative}
+.brand-mark::after{content:"";position:absolute;left:5px;right:5px;bottom:5px;height:3px;background:var(--surface);border-radius:2px}
+.nav-links{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin-left:auto}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{padding:6px 10px;border-radius:6px;text-decoration:none;font-size:13.5px;color:var(--muted);white-space:nowrap}
+.nav-links a:hover{background:var(--sunk);color:var(--ink)}
+
+/* hero */
+.hero{padding-block:44px 28px}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:start}
+.hero h1{font-size:clamp(34px,5.4vw,58px);line-height:1.02;font-weight:800}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--r1),var(--r3) 55%,var(--r5));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{font-size:17px;color:var(--muted);max-width:56ch;margin:18px 0 22px}
+.steps{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0 0 24px;padding:0;list-style:none;font-size:13.5px}
+.steps li{display:flex;gap:7px;align-items:baseline}
+.steps b{font-family:var(--mono);color:var(--gold);font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:8px;background:var(--btn);color:var(--btn-fg);padding:11px 18px;font-weight:600;cursor:pointer;text-decoration:none}
+.btn:hover{opacity:.9}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.small{padding:7px 12px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.cta-row{display:flex;gap:10px;flex-wrap:wrap}
+
+.board{background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);overflow:hidden}
+.board-head{display:flex;justify-content:space-between;align-items:baseline;padding:14px 16px 10px;border-bottom:1px solid var(--line);gap:12px}
+.board-head h2{font-size:16px}
+.board table{width:100%;border-collapse:collapse;font-size:13.5px}
+.board td{padding:8px 16px;border-bottom:1px solid var(--line);vertical-align:baseline}
+.board tr:last-child td{border-bottom:0}
+.board td:nth-child(2){text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.board td small{display:block;color:var(--muted);font-size:11.5px}
+.curve{padding:12px 16px 14px;border-top:1px solid var(--line);background:var(--sunk)}
+.curve svg{display:block;width:100%;height:auto}
+
+/* sections */
+section.block{padding-block:48px;border-top:1px solid var(--line)}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+.sec-head h2{font-size:clamp(26px,3.4vw,36px);font-weight:800}
+.sec-head p{color:var(--muted);max-width:60ch;margin:6px 0 0}
+
+/* quiz */
+.profile-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:28px;align-items:start}
+.quiz{display:grid;gap:18px;min-width:0}
+.q{border:0;margin:0;padding:0;min-width:0}
+.q legend{font-weight:600;margin-bottom:8px;padding:0}
+.q legend span{font-family:var(--mono);color:var(--gold);margin-right:8px;font-size:12.5px}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt span{display:inline-block;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px;cursor:pointer;transition:background .15s,border-color .15s}
+.opt span:hover{border-color:var(--muted)}
+.opt input:checked+span{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.opt input:focus-visible+span{outline:2px solid var(--gold);outline-offset:2px}
+.sample-flag{display:inline-block;font-size:12px;background:var(--gold-soft);color:var(--ink);padding:3px 9px;border-radius:4px;margin-bottom:4px}
+
+.readout{position:sticky;top:76px;background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);padding:20px;display:grid;gap:16px}
+.readout h3{font-size:22px}
+.meter{position:relative;height:12px;border-radius:6px;background:linear-gradient(90deg,var(--r1),var(--r2),var(--r3),var(--r4),var(--r5));margin-top:10px}
+.meter-pin{position:absolute;top:-6px;width:4px;height:24px;background:var(--ink);border-radius:2px;transform:translateX(-2px);transition:left .4s}
+.meter-scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px;font-family:var(--mono)}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin:0}
+.facts dt{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.facts dd{margin:0;font-weight:600}
+
+/* matches */
+.match-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.match{background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.match-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.match h3{font-size:17px}
+.fit{font-family:var(--mono);font-weight:600;font-size:20px}
+.fitbar{height:5px;background:var(--sunk);border-radius:3px;overflow:hidden}
+.fitbar i{display:block;height:100%;border-radius:3px}
+.reasons{list-style:none;margin:0;padding:0;display:grid;gap:5px;font-size:13.5px}
+.reasons li{display:flex;gap:8px}
+.reasons li::before{content:"";flex:0 0 7px;height:7px;margin-top:7px;border-radius:50%;background:var(--good)}
+.reasons li.w::before{background:var(--warn)}
+.match .actions{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap}
+.rank{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.more-row{margin-top:16px}
+
+.chip-risk{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-family:var(--mono);color:var(--muted)}
+.dots{display:inline-flex;gap:2px}
+.dots i{width:7px;height:7px;border-radius:2px;background:var(--sunk);border:1px solid var(--line)}
+
+/* library */
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.filters button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 13px;font-size:13px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.lib{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.asset{background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);min-width:0}
+.asset summary{list-style:none;cursor:pointer;padding:15px 16px;display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:center}
+.asset summary::-webkit-details-marker{display:none}
+.asset summary h3{font-size:16.5px}
+.asset .tagline{grid-column:1/-1;color:var(--muted);font-size:13.5px}
+.asset .stats{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;margin-top:4px}
+.asset .stats span b{font-family:var(--mono);font-weight:600}
+.asset .stats span{color:var(--muted)}
+.asset .stats span b{color:var(--ink)}
+.asset[open]{grid-column:1/-1}
+.asset-body{padding:0 16px 18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;border-top:1px solid var(--line);padding-top:16px}
+.asset-body h4{font-size:12px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 8px;font-weight:600}
+.asset-body ol,.asset-body ul{margin:0;padding-left:18px;display:grid;gap:5px;font-size:13.5px}
+.asset-body p{margin:0;font-size:13.5px}
+.asset-foot{grid-column:1/-1;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;background:var(--sunk);border-radius:8px;padding:10px 12px;font-size:13px}
+.caret{font-family:var(--mono);color:var(--muted);transition:transform .2s}
+.asset[open] .caret{transform:rotate(90deg)}
+
+/* plan */
+.plan-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:28px;align-items:start}
+.alloc-bar{display:flex;height:34px;border-radius:7px;overflow:hidden;margin:6px 0 14px}
+.alloc-bar i{display:block;height:100%;transition:width .4s}
+.alloc-table{width:100%;border-collapse:collapse;font-size:13.5px}
+.alloc-table td{padding:8px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.alloc-table td:last-child{text-align:right;font-family:var(--mono);font-weight:600;white-space:nowrap}
+.alloc-table small{display:block;color:var(--muted)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px;vertical-align:-1px}
+.inputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.inputs label{display:grid;gap:4px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.inputs input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:7px;background:var(--surface);font-family:var(--mono);font-size:15px;text-transform:none;letter-spacing:0;color:var(--ink)}
+.chart-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);padding:16px}
+.chart-card svg{display:block;width:100%;height:auto}
+.proj-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.proj-sum div{background:var(--sunk);border-radius:7px;padding:10px}
+.proj-sum b{display:block;font-family:var(--mono);font-size:17px}
+.proj-sum span{font-size:11.5px;color:var(--muted)}
+.note{font-size:12.5px;color:var(--muted)}
+
+/* analyst */
+.chat{background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr auto;min-height:480px;max-height:720px}
+.chat-head{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.chat-head .ctx{font-size:12.5px;color:var(--muted)}
+.log{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;min-height:0}
+.msg{max-width:78ch;font-size:14.5px;min-width:0}
+.msg.user{align-self:flex-end;background:var(--ink);color:var(--paper);padding:9px 13px;border-radius:12px 12px 2px 12px}
+.msg.ai{align-self:flex-start;background:var(--sunk);padding:12px 15px;border-radius:12px 12px 12px 2px}
+.msg.ai p{margin:0 0 8px}.msg.ai p:last-child{margin:0}
+.msg.ai ul,.msg.ai ol{margin:0 0 8px;padding-left:20px}
+.msg.err{color:var(--bad);font-size:13px;align-self:flex-start}
+.prompts{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 10px}
+.prompts button{border:1px dashed var(--line);background:transparent;border-radius:999px;padding:6px 11px;font-size:12.5px;cursor:pointer;color:var(--muted)}
+.prompts button:hover{color:var(--ink);border-color:var(--muted)}
+.composer{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+.composer input{flex:1;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+.offline{padding:16px;font-size:13.5px;color:var(--muted)}
+
+/* market */
+.market-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:start}
+.brief{display:grid;grid-template-columns:86px 1fr;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+.brief:first-child{padding-top:0}
+.brief time{font-family:var(--mono);font-size:12px;color:var(--muted);padding-top:3px}
+.brief h3{font-size:16px;margin-bottom:4px}
+.brief p{margin:0;font-size:14px;color:var(--muted)}
+.brief .so{color:var(--ink);margin-top:6px;font-size:13.5px}
+.brief .so b{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--gold);margin-right:6px}
+.insight{background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);padding:16px;margin-bottom:12px}
+.insight .big{font-family:var(--mono);font-size:26px;font-weight:600}
+.insight p{margin:4px 0 0;font-size:13.5px;color:var(--muted)}
+
+/* pro */
+.nav-links a.pro-link{color:var(--ink);font-weight:600}
+.nav-links a.pro-link::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);margin-right:6px;vertical-align:1px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.tiers{display:grid;grid-template-columns:.8fr 1.2fr;gap:14px;margin-bottom:22px}
+.tier{background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);padding:18px;display:flex;flex-direction:column;gap:12px}
+.tier-pro{border:2px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(90deg,var(--r1),var(--r3),var(--r5)) border-box}
+.tier-head{display:flex;justify-content:space-between;align-items:baseline}
+.tier h3{font-size:20px}
+.price b{font-family:var(--display);font-size:30px;font-weight:800}
+.price span{color:var(--muted);font-size:13px;margin-left:2px}
+.tier ul{margin:0;padding-left:18px;display:grid;gap:6px;font-size:14px}
+.tier-pro ul{columns:2;column-gap:28px;display:block}
+.tier-pro li{break-inside:avoid;margin-bottom:6px}
+.tier-state,.tier-note{font-size:12.5px;color:var(--muted)}
+.tier .btn{align-self:flex-start}
+.agent{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;align-items:start}
+.watch{background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);padding:16px;display:grid;gap:14px;position:sticky;top:76px}
+.watch-head{display:flex;justify-content:space-between;align-items:start;gap:8px}
+.watch-head h3{font-size:16px}
+.pill{font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:999px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill.on{background:var(--gold-soft);color:var(--ink)}
+.watch-list{display:grid;gap:6px}
+.w-item{display:grid;grid-template-columns:1fr auto;gap:2px 8px;text-align:left;width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:8px;background:var(--paper);cursor:pointer}
+.w-item[aria-current="true"]{border-color:var(--ink);background:var(--surface);box-shadow:inset 3px 0 0 var(--gold)}
+.w-item b{font-weight:600;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.w-item small{grid-column:1;color:var(--muted);font-size:12px}
+.w-item .st{grid-row:1/3;grid-column:2;align-self:center;font-family:var(--mono);font-size:10.5px;padding:2px 7px;border-radius:999px}
+.st.ready{background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good)}
+.st.queued{background:var(--gold-soft);color:var(--ink)}
+.add-form{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:14px}
+.add-form select,.add-form input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:7px;background:var(--paper)}
+.add-form .btn{justify-self:start}
+.add-form fieldset[disabled]{opacity:.5}
+.suggest{display:flex;flex-wrap:wrap;gap:5px}
+.suggest button{border:1px dashed var(--line);background:transparent;border-radius:999px;padding:4px 9px;font-size:12px;cursor:pointer;color:var(--muted)}
+.suggest button:hover{color:var(--ink);border-color:var(--muted)}
+.brief-view{background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);padding:20px;min-width:0;display:grid;gap:20px}
+.bv-head{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:start}
+.bv-head h3{font-size:clamp(22px,2.6vw,28px);font-weight:800}
+.bv-kind{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.bv-headline{font-size:16px;margin:6px 0 0;max-width:62ch}
+.bv-metric{text-align:right}
+.bv-metric .v{font-family:var(--mono);font-size:30px;font-weight:600;line-height:1.1}
+.bv-metric .c{font-family:var(--mono);font-size:14px;font-weight:600}
+.bv-metric .l,.bv-metric .s{font-size:12px;color:var(--muted);max-width:30ch;margin-left:auto}
+.up{color:var(--good)}.down{color:var(--bad)}.flat{color:var(--muted)}
+.bv-chart{background:var(--sunk);border-radius:8px;padding:12px 12px 6px}
+.bv-chart svg{display:block;width:100%;height:auto}
+.bv-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0}
+.bv-facts div{border-left:2px solid var(--line);padding-left:10px;min-width:0}
+.bv-facts dt{font-size:11.5px;color:var(--muted)}
+.bv-facts dd{margin:0;font-family:var(--mono);font-weight:600;font-size:14px}
+.bv-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.bv-sec h4{font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 10px;font-weight:600}
+.bv-items{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.bv-items li{font-size:14px;display:grid;grid-template-columns:54px 1fr;gap:8px}
+.bv-items time{font-family:var(--mono);font-size:11.5px;color:var(--muted);padding-top:2px}
+.bv-items a{font-size:12px;color:var(--muted)}
+.bv-mean{background:var(--gold-soft);border-radius:8px;padding:14px 16px}
+.bv-mean h4{margin:0 0 6px;font-size:14px;font-family:var(--display)}
+.bv-mean p{margin:0;font-size:14.5px}
+.bv-list{margin:0;padding-left:18px;display:grid;gap:5px;font-size:14px}
+.bv-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px}
+.empty{text-align:center;padding:40px 16px;color:var(--muted)}
+.empty h3{color:var(--ink);font-size:20px;margin-bottom:6px}
+
+/* interactive charts */
+.chartwrap{position:relative}
+.chartwrap svg{cursor:crosshair;touch-action:pan-y}
+.chartwrap svg:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+.tip{position:absolute;z-index:4;pointer-events:none;background:var(--ink);color:var(--paper);border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.4;min-width:160px;max-width:240px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.tip b{display:block;font-size:12.5px;margin-bottom:4px}
+.tip div{display:flex;gap:7px;align-items:center}
+.tip i{flex:0 0 8px;height:8px;border-radius:2px}
+.tip span{margin-left:auto;padding-left:12px;font-family:var(--mono);font-weight:600;white-space:nowrap}
+.tip small{display:block;opacity:.75;margin-top:5px;font-size:11px}
+.hint{font-size:11.5px;color:var(--muted);margin-top:4px}
+
+/* analytics */
+.an{border:1px solid var(--line);border-radius:10px;padding:18px;display:grid;gap:18px}
+.an-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.an-head h4{margin:0;font-family:var(--display);font-size:18px}
+.dirpill{font-family:var(--mono);font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;white-space:nowrap}
+.dir-up{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.dir-down{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+.dir-mixed,.dir-flat{background:var(--gold-soft);color:var(--ink)}
+.an-sum{margin:0;font-size:14.5px;max-width:75ch}
+.scale{position:relative;height:46px;margin:6px 8px 0}
+.scale-track{position:absolute;left:0;right:0;top:20px;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--bad),var(--r3),var(--good));opacity:.55}
+.mk{position:absolute;top:13px;width:20px;height:20px;margin-left:-10px;border-radius:50%;border:3px solid var(--surface);background:var(--ink);cursor:help;padding:0}
+.mk.now{background:var(--gold);width:16px;height:30px;top:8px;margin-left:-8px;border-radius:4px}
+.mk::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);font:600 11.5px/1.35 var(--mono);padding:5px 8px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s}
+.mk:hover::after,.mk:focus-visible::after{opacity:1}
+.mk-lab{position:absolute;top:-2px;font-family:var(--mono);font-size:10.5px;color:var(--muted);transform:translateX(-50%);white-space:nowrap}
+.scen{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.scen div{background:var(--sunk);border-radius:8px;padding:10px 12px;min-width:0}
+.scen .nm{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.scen .vl{font-family:var(--mono);font-size:18px;font-weight:600}
+.scen .ch{font-family:var(--mono);font-size:12px;margin-left:6px}
+.scen p{margin:4px 0 0;font-size:12.5px;color:var(--muted)}
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.proj-grid div{border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-width:0}
+.proj-grid dt{font-size:11.5px;color:var(--muted)}
+.proj-grid dd{margin:2px 0 0;font-family:var(--mono);font-weight:600;font-size:16px}
+.proj-grid p{margin:4px 0 0;font-size:12px;color:var(--muted)}
+.sig{width:100%;border-collapse:collapse;font-size:13.5px}
+.sig td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.sig td:nth-child(2){font-family:var(--mono);white-space:nowrap}
+.sig small{color:var(--muted)}
+.read{font-family:var(--mono);font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.read.bullish{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.read.bearish{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+.read.neutral{background:var(--sunk);color:var(--muted)}
+.sig-wrap{overflow-x:auto}
+
+/* experience levels: one page, three layouts (section order, density, depth) */
+main{display:flex;flex-direction:column}
+main>*{order:50}
+main>.hero{order:0}
+#basics,.nav-links a[href="#basics"]{order:5}
+#profile,.nav-links a[href="#profile"]{order:10}
+#matches,.nav-links a[href="#matches"]{order:20}
+#desk,.nav-links a[href="#desk"]{order:25}
+#pro,.nav-links a[href="#pro"]{order:30}
+#library,.nav-links a[href="#library"]{order:40}
+#plan,.nav-links a[href="#plan"]{order:50}
+#analyst,.nav-links a[href="#analyst"]{order:60}
+#market,.nav-links a[href="#market"]{order:70}
+#method,.nav-links a[href="#method"]{order:90}
+body[data-level="new"] #library,body[data-level="new"] .nav-links a[href="#library"]{order:22}
+body[data-level="new"] #plan,body[data-level="new"] .nav-links a[href="#plan"]{order:24}
+body[data-level="new"] #analyst,body[data-level="new"] .nav-links a[href="#analyst"]{order:26}
+body[data-level="new"] #pro,body[data-level="new"] .nav-links a[href="#pro"]{order:28}
+body[data-level="expert"] #market,body[data-level="expert"] .nav-links a[href="#market"]{order:27}
+body[data-level="expert"] #analyst,body[data-level="expert"] .nav-links a[href="#analyst"]{order:45}
+body[data-level="expert"] #library,body[data-level="expert"] .nav-links a[href="#library"]{order:80}
+body[data-level="new"]{font-size:16px}
+body[data-level="new"] .lede{font-size:18px}
+body[data-level="new"] .asset-body p,body[data-level="new"] .asset-body li{font-size:14.5px}
+body[data-level="expert"]{font-size:14.5px}
+body[data-level="expert"] section.block{padding-block:36px}
+body[data-level="expert"] .sec-head{margin-bottom:18px}
+
+.lvl-nav select{padding:6px 8px;border:1px solid var(--line);border-radius:7px;background:var(--paper);font-size:13px;max-width:140px}
+.lvl-q{font-weight:600;margin-bottom:8px}
+.lvl-pick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:6px}
+.lvl-pick button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:12px;cursor:pointer;display:grid;gap:3px;align-content:start}
+.lvl-pick button:hover{border-color:var(--muted)}
+.lvl-pick button b{font-family:var(--display);font-size:15.5px}
+.lvl-sub{font-size:12.5px;color:var(--muted)}
+.lvl-pick button[aria-pressed="true"]{border:2px solid var(--ink);padding:11px}
+.lvl-bars{display:flex;gap:3px;margin-bottom:3px}
+.lvl-bars i{width:14px;height:4px;border-radius:2px;background:var(--line)}
+.lvl-pick button[aria-pressed="true"] .lvl-bars i.on{background:var(--gold)}
+.lvl-bars i.on{background:var(--muted)}
+#lvl-desc{margin:0 0 22px}
+
+.term{border-bottom:1.5px dotted var(--gold);cursor:help}
+.gtip{position:fixed;z-index:30;max-width:260px;background:var(--ink);color:var(--paper);padding:8px 10px;border-radius:8px;font-size:12.5px;line-height:1.45;pointer-events:none;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.gtip b{display:block;font-size:12px;margin-bottom:2px}
+
+.basics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.bcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);padding:16px;display:grid;gap:6px;align-content:start}
+.bcard .fig{font-family:var(--mono);font-size:24px;font-weight:600;line-height:1.1}
+.bcard .fig small{display:block;font-family:var(--body);font-size:12px;color:var(--muted);font-weight:400;margin-top:3px}
+.bcard h3{font-size:16.5px;margin-top:6px}
+.bcard p{margin:0;font-size:14.5px;color:var(--muted)}
+.basics-next{margin:16px 0 0;padding:14px 16px;background:var(--gold-soft);border-radius:8px;font-size:15px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+
+.plain{background:color-mix(in srgb,var(--r1) 9%,var(--surface));border:1px solid color-mix(in srgb,var(--r1) 30%,var(--line));border-radius:8px;padding:14px 16px}
+.plain h4{margin:0 0 6px;font-family:var(--display);font-size:14.5px;text-transform:none;letter-spacing:0;color:var(--ink)}
+.plain p{margin:0;font-size:14.5px}
+.plain ol{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14px}
+.protake{background:var(--sunk);border-radius:8px;padding:14px 16px;display:grid;gap:8px}
+.protake p{margin:0;font-size:14px}
+.cstats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0}
+.cstats div{background:var(--sunk);border-radius:7px;padding:8px 10px;min-width:0}
+.cstats dt{font-size:11px;color:var(--muted)}
+.cstats dd{margin:0;font-family:var(--mono);font-weight:600;font-size:13.5px}
+details.more{border-top:1px solid var(--line);padding-top:12px}
+details.more>summary{cursor:pointer;font-weight:600;font-size:14px;list-style:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"+ ";font-family:var(--mono);color:var(--gold)}
+details.more[open]>summary::before{content:"− "}
+details.more[open]>summary{margin-bottom:14px}
+details.more>div{display:grid;gap:18px}
+.lens{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;background:var(--sunk);border-radius:8px;padding:12px 14px}
+.lens p{font-size:13px}
+.xstats{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.badge{display:inline-block;font-family:var(--mono);font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:999px;background:var(--gold-soft);color:var(--ink);margin-top:4px}
+
+.desk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);padding:16px;min-width:0;display:grid;gap:12px;align-content:start}
+.panel h3{font-size:16px}
+.panel>p{margin:0;font-size:12.5px;color:var(--muted)}
+.span2{grid-column:span 2}
+.spreads{display:grid;margin:0}
+.spreads div{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.spreads dt{font-size:13px}
+.spreads dd{margin:0;font-family:var(--mono);font-weight:600}
+.spreads small{grid-column:1/-1;color:var(--muted);font-size:11.5px}
+.sliders{display:grid;gap:9px}
+.sl{display:grid;grid-template-columns:130px 1fr 52px;gap:10px;align-items:center;font-size:13px}
+.sl input[type=range]{width:100%;accent-color:var(--gold)}
+.sl output{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.kpis div{background:var(--sunk);border-radius:8px;padding:9px 10px;min-width:0}
+.kpis b{display:block;font-family:var(--mono);font-size:17px}
+.kpis span{font-size:11.5px;color:var(--muted)}
+.kpis em{display:block;font-style:normal;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.tbl-wrap{overflow-x:auto}
+.mx{width:100%;border-collapse:collapse;font-size:13px;min-width:600px}
+.mx th{text-align:right;padding:0;border-bottom:1px solid var(--line)}
+.mx th:first-child,.mx td:first-child{text-align:left}
+.mx th button{background:none;border:0;padding:8px 6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;cursor:pointer;width:100%;text-align:inherit}
+.mx th button[aria-sort]{color:var(--ink)}
+.mx td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.mx td:first-child{font-family:var(--body)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.panel label{display:grid;gap:4px;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.panel input[type=number],.panel select{width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:7px;background:var(--paper);font-size:14px;text-transform:none;letter-spacing:0;color:var(--ink)}
+.sz-out{background:var(--sunk);border-radius:8px;padding:12px;font-size:13.5px}
+.sz-out b{font-family:var(--mono);font-size:20px;display:block}
+@media (max-width:980px){
+  .basics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .desk-grid{grid-template-columns:1fr}.span2{grid-column:auto}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cstats{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  .basics,.lens{grid-template-columns:1fr}
+  .cstats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lvl-pick{grid-template-columns:1fr}
+  .sl{grid-template-columns:100px 1fr 44px}
+}
+
+/* method */
+.method-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.method-grid h3{font-size:16px;margin-bottom:8px}
+.method-grid p,.method-grid li{font-size:13.5px;color:var(--muted)}
+.method-grid ul{padding-left:18px;margin:0;display:grid;gap:4px}
+.disclaimer{margin-top:28px;padding:14px 16px;border:1px solid var(--line);border-radius:8px;font-size:12.5px;color:var(--muted);background:var(--surface)}
+footer{padding-block:28px 40px;font-size:12.5px;color:var(--muted)}
+
+@media (max-width:980px){
+  .hero-grid,.profile-grid,.plan-grid,.market-grid,.agent,.tiers{grid-template-columns:1fr}
+  .watch{position:static}
+  .bv-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .readout{position:static}
+  .match-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .method-grid{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .match-list,.lib{grid-template-columns:1fr}
+  .asset-body{grid-template-columns:1fr}
+  .inputs{grid-template-columns:1fr 1fr}
+  .proj-sum{grid-template-columns:1fr}
+  .nav-links{margin-left:0}
+  .nav .wrap{gap:10px}
+  .brief{grid-template-columns:1fr;gap:4px}
+  .bv-cols{grid-template-columns:1fr}
+  .tier-pro ul{columns:1}
+  .bv-metric{text-align:left}.bv-metric .l,.bv-metric .s{margin-left:0}
+}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"></span>First Position</a>
+    <label class="lvl-nav" for="lvl-sel"><span class="sr">Experience level</span><select id="lvl-sel"><option value="new">New investor</option><option value="intermediate">Intermediate</option><option value="expert">Expert</option></select></label>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#basics" data-show="new">Basics</a><a href="#desk" data-show="expert">Expert Desk</a><a href="#profile">Profile</a><a href="#matches">Matches</a><a href="#pro" class="pro-link">Pro Agent</a><a href="#library">Library</a><a href="#plan">Plan</a><a href="#analyst">AI Analyst</a><a href="#market">Market</a><a href="#method">Method</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow">Investing, matched to you</div>
+        <h1>Find the investments that <em>fit you</em>, then learn them before you buy.</h1>
+        <p class="lede">First Position profiles your goals, timeline and comfort with risk, ranks 18 beginner-accessible investments from savings accounts to raw land and crypto, and backs every match with live rates, guides and an AI analyst you can question.</p>
+        <div class="lvl-q" id="lvl-q-label">How much investing experience do you have?</div>
+        <div class="lvl-pick" role="group" aria-labelledby="lvl-q-label">
+          <button type="button" data-lvl="new" aria-pressed="false"><span class="lvl-bars" aria-hidden="true"><i class="on"></i><i></i><i></i></span><b>I'm new</b><span class="lvl-sub">Plain-English guides, definitions and a starter path</span></button>
+          <button type="button" data-lvl="intermediate" aria-pressed="false"><span class="lvl-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i></span><b>I know the basics</b><span class="lvl-sub">Full guides, metrics and comparisons</span></button>
+          <button type="button" data-lvl="expert" aria-pressed="false"><span class="lvl-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span><b>I'm experienced</b><span class="lvl-sub">Frameworks, analytics and portfolio tools</span></button>
+        </div>
+        <p class="note" id="lvl-desc"></p>
+        <ol class="steps">
+          <li><b>1</b>Build your profile</li>
+          <li><b>2</b>See ranked matches</li>
+          <li><b>3</b>Study the guides</li>
+          <li><b>4</b>Model a starter plan</li>
+          <li><b>5</b>Ask the analyst</li>
+        </ol>
+        <div class="cta-row">
+          <a class="btn" href="#profile">Start your profile</a>
+          <a class="btn ghost" href="#library">Browse all 18 investments</a>
+        </div>
+      </div>
+      <aside class="board" aria-labelledby="board-title">
+        <div class="board-head">
+          <h2 id="board-title">Rate board</h2>
+          <span class="eyebrow">As of Nov 2–4, 2026</span>
+        </div>
+        <table id="board"></table>
+        <div class="curve">
+          <div class="eyebrow" style="margin-bottom:6px">Treasury yield curve · Nov 2, 2026</div>
+          <div class="chartwrap"><svg id="curve" viewBox="0 0 420 130" role="img" aria-label="Treasury yield curve from 3-month to 30-year. Hover or use arrow keys for values."></svg><div class="tip" hidden></div></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- BASICS (new investors) -->
+  <section class="block" id="basics" data-show="new">
+    <div class="wrap">
+      <div class="sec-head"><div>
+        <div class="eyebrow">Start here</div>
+        <h2>Investing basics in five minutes</h2>
+        <p>Six ideas every guide on this page builds on. Words with a dotted underline show a definition when you hover or tap them.</p>
+      </div></div>
+      <div class="basics">
+        <article class="bcard"><div class="fig">3–6 months<small>of expenses, saved first</small></div><h3>Build an emergency fund before investing</h3><p>Keep this cash in an FDIC-insured high-yield savings account, which pays up to 4.70% right now. Investments can drop right when you need the money.</p></article>
+        <article class="bcard"><div class="fig">4% vs 10%<small>T-bill today vs stocks' long-run average</small></div><h3>Risk and return travel together</h3><p>Safer investments pay less. A T-bill pays about 4% with almost no risk. Stocks have averaged around 10% a year over long periods but can fall 30–50% in a crash.</p></article>
+        <article class="bcard"><div class="fig">$26,000<small>from $150 a month for 10 years at 7%</small></div><h3>Compounding does the heavy lifting</h3><p>You'd put in $18,000; growth adds about $8,000. Your returns start earning returns of their own, so starting early matters more than starting big.</p></article>
+        <article class="bcard"><div class="fig">500<small>companies in one S&amp;P 500 fund</small></div><h3>Don't put all your eggs in one basket</h3><p>An index fund holds hundreds of companies, so one company's bad news barely moves it. A single stock can fall 50% on its own.</p></article>
+        <article class="bcard"><div class="fig">−26%<small>of 25-year gains lost to a 1% yearly fee</small></div><h3>Fees and account type matter</h3><p>Growing at 6% instead of 7% for 25 years costs about a quarter of your gains. A Roth IRA lets investments grow tax-free if you have income from a job.</p></article>
+        <article class="bcard"><div class="fig">3 trade-offs<small>return, risk, liquidity</small></div><h3>Every investment balances three things</h3><p>How much it can earn, how much it can drop, and how fast you can get your money out. The risk dots and liquidity labels on this page show where each one sits.</p></article>
+      </div>
+      <div class="basics-next" id="basics-next"></div>
+    </div>
+  </section>
+
+  <!-- EXPERT DESK -->
+  <section class="block" id="desk" data-show="expert">
+    <div class="wrap">
+      <div class="sec-head"><div>
+        <div class="eyebrow">Expert desk</div>
+        <h2>Portfolio construction tools</h2>
+        <p>Relative value across the curve, a correlation-aware allocation builder, a risk/return matrix for all 18 investments and a volatility-based position sizer. Return and volatility inputs are long-run assumptions, not forecasts.</p>
+      </div></div>
+      <div class="desk-grid">
+        <div class="panel">
+          <h3>Curve &amp; spreads</h3>
+          <dl class="spreads" id="spreads"></dl>
+          <label for="tey-rate">State income tax rate (%)<input id="tey-rate" type="number" min="0" max="15" step="0.05" value="4.95"></label>
+          <p id="tey-out"></p>
+        </div>
+        <div class="panel span2">
+          <h3>Allocation builder</h3>
+          <div class="sliders" id="dw-sliders"></div>
+          <div class="alloc-bar" id="dw-bar" style="margin:0"></div>
+          <div class="kpis" id="dw-kpis"></div>
+          <div class="cta-row"><button class="btn ghost small" id="dw-load" type="button">Load my model allocation</button><label for="dw-val" style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:13px">Portfolio $<input id="dw-val" type="number" min="0" step="1000" value="10000" style="width:120px"></label></div>
+          <p>Volatility uses an assumed correlation matrix (stocks–REITs 0.7, stocks–alternatives 0.4, stocks–bonds 0.2, cash ≈ 0). Sharpe uses the 3-month T-bill (4.03%) as the risk-free rate. Downside is a parametric 1-year 5th percentile.</p>
+        </div>
+        <div class="panel span2">
+          <h3>Risk / return matrix</h3>
+          <div class="tbl-wrap"><table class="mx" id="mx"></table></div>
+          <p>Click a column to sort. Sharpe is shown only where volatility is meaningful (above 1%).</p>
+        </div>
+        <div class="panel">
+          <h3>Position sizer</h3>
+          <div class="form-row">
+            <label for="sz-val">Portfolio ($)<input id="sz-val" type="number" min="0" step="1000" value="10000"></label>
+            <label for="sz-bud">Risk budget (%)<input id="sz-bud" type="number" min="0.1" max="20" step="0.1" value="2"></label>
+          </div>
+          <label for="sz-asset">Investment<select id="sz-asset"></select></label>
+          <div class="sz-out" id="sz-out"></div>
+          <p>Weight = risk budget ÷ the asset's volatility, so a one-standard-deviation bad year costs about your budget.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROFILE -->
+  <section class="block" id="profile">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <div class="eyebrow">Step 1</div>
+          <h2>Your investor profile</h2>
+          <p>Eight questions. Your experience level changes how the whole page explains things; the rest set a risk score, a timeline and a few constraints that every match and plan on this page uses.</p>
+        </div>
+        <button class="btn ghost small" id="reset">Reset answers</button>
+      </div>
+      <div class="profile-grid">
+        <form class="quiz" id="quiz" autocomplete="off"></form>
+        <aside class="readout" aria-live="polite">
+          <div>
+            <span class="sample-flag" id="sample-flag">Sample profile · change any answer</span>
+            <div class="eyebrow" style="margin-top:6px">Risk profile</div>
+            <h3 id="r-label">Balanced grower</h3>
+            <div class="meter"><span class="meter-pin" id="r-pin"></span></div>
+            <div class="meter-scale"><span>Preserve</span><span>Balance</span><span>Grow</span><span>Speculate</span></div>
+          </div>
+          <dl class="facts">
+            <div><dt>Risk score</dt><dd class="num" id="f-score">–</dd></div>
+            <div><dt>Horizon</dt><dd id="f-hor">–</dd></div>
+            <div><dt>Starting with</dt><dd id="f-amt">–</dd></div>
+            <div><dt>Access needed</dt><dd id="f-liq">–</dd></div>
+            <div><dt>Experience</dt><dd id="f-lvl">–</dd></div>
+            <div><dt>Top match</dt><dd id="f-top">–</dd></div>
+          </dl>
+          <p class="note" id="r-desc" style="margin:0"></p>
+          <a class="btn small" href="#matches">See my matches</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- MATCHES -->
+  <section class="block" id="matches">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <div class="eyebrow">Step 2</div>
+          <h2>Your best-fit investments</h2>
+          <p>Ranked by fit score: how well each option's risk, lock-up, minimum and effort line up with your profile, plus a bonus for the interests you picked.</p>
+        </div>
+        <button class="btn small" id="explain-matches">Ask AI to explain my matches</button>
+      </div>
+      <div class="match-list" id="match-list"></div>
+      <div class="more-row"><button class="btn ghost small" id="show-all">Show all 18 ranked</button></div>
+    </div>
+  </section>
+
+  <!-- PRO -->
+  <section class="block pro" id="pro">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <div class="eyebrow">First Position Pro</div>
+          <h2>Your personal research agent</h2>
+          <p>Free shows you what fits. Pro follows it for you. Add the exact company, county, coin or rate you're considering, and your agent researches it every morning: prices with history, the news that matters, management changes, local developments, written so anyone can follow.</p>
+        </div>
+      </div>
+
+      <div class="tiers">
+        <div class="tier">
+          <div class="tier-head"><h3>Free</h3><div class="price"><b>$0</b></div></div>
+          <ul>
+            <li>Investor profile &amp; risk score</li>
+            <li>Ranked matches across 18 investments</li>
+            <li>Library guides and starter plan</li>
+            <li>AI analyst for general questions</li>
+          </ul>
+          <span class="tier-state">Your current plan</span>
+        </div>
+        <div class="tier tier-pro">
+          <div class="tier-head"><h3>Pro</h3><div class="price"><b>$12</b><span>/month</span></div></div>
+          <ul>
+            <li><strong>Daily agent briefings</strong> on up to 10 holdings</li>
+            <li><strong>Stocks:</strong> price history, earnings, guidance, management changes, analyst targets</li>
+            <li><strong>Land &amp; real estate:</strong> county price history, recent sales, nearby developments, zoning and infrastructure news</li>
+            <li><strong>Crypto, funds &amp; rates:</strong> flows, yields, Fed and inflation impact</li>
+            <li>"What this means for you," tied to your profile</li>
+            <li>Ask the agent about any briefing</li>
+          </ul>
+          <button class="btn" id="unlock" type="button">Unlock Pro demo</button>
+          <span class="tier-note">Prototype: no payment is collected.</span>
+        </div>
+      </div>
+
+      <div class="agent" id="agent">
+        <aside class="watch">
+          <div class="watch-head">
+            <div><div class="eyebrow">Watchlist</div><h3>Tracked by your agent</h3></div>
+            <span class="pill" id="pro-state">Preview</span>
+          </div>
+          <div id="watch-list" class="watch-list"><p class="note">Loading your watchlist…</p></div>
+          <form id="add-form" class="add-form" autocomplete="off">
+            <div class="eyebrow">Add something to track</div>
+            <label for="add-kind" class="sr">Type</label>
+            <select id="add-kind">
+              <option value="stock">Stock (ticker or company)</option>
+              <option value="fund">Fund / ETF</option>
+              <option value="land">Land (county or area)</option>
+              <option value="realestate">Housing market (city)</option>
+              <option value="crypto">Crypto</option>
+              <option value="rates">Rates &amp; bonds</option>
+              <option value="commodity">Gold / commodity</option>
+            </select>
+            <label for="add-name" class="sr">Name</label>
+            <input id="add-name" maxlength="80" placeholder="e.g. NVDA or Hamilton County, IN">
+            <label for="add-note" class="sr">What should the agent focus on?</label>
+            <input id="add-note" maxlength="140" placeholder="Optional: what should it focus on?">
+            <button class="btn small" id="add-btn" type="submit">Add to agent</button>
+            <p class="note" id="add-msg" aria-live="polite"></p>
+            <div class="suggest" id="suggest"></div>
+          </form>
+        </aside>
+        <div class="brief-view" id="brief-view" aria-live="polite"></div>
+      </div>
+      <p class="note" style="margin-top:12px">Briefings refresh once a day from public sources (company filings, exchanges, government data, news). New items are researched on the next morning run.</p>
+    </div>
+  </section>
+
+  <!-- LIBRARY -->
+  <section class="block" id="library">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <div class="eyebrow">Step 3</div>
+          <h2>Investment library</h2>
+          <p>Every option a new investor can realistically start with. Open a card for how it works, how to buy it, what can go wrong and how it's taxed.</p>
+        </div>
+      </div>
+      <div class="filters" id="filters" role="group" aria-label="Filter by sector"></div>
+      <div class="lib" id="lib"></div>
+    </div>
+  </section>
+
+  <!-- PLAN -->
+  <section class="block" id="plan">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <div class="eyebrow">Step 4</div>
+          <h2>Starter plan &amp; projection</h2>
+          <p>A model allocation for your risk score, and what it could grow to. Expected returns use today's yields for cash and bonds and long-run history for stocks, real estate and alternatives.</p>
+        </div>
+      </div>
+      <div class="plan-grid">
+        <div>
+          <div class="eyebrow">Model allocation · <span id="alloc-label"></span></div>
+          <div class="alloc-bar" id="alloc-bar"></div>
+          <table class="alloc-table" id="alloc-table"></table>
+          <p class="note" id="alloc-note"></p>
+        </div>
+        <div>
+          <div class="inputs">
+            <label for="in-start">Start ($)<input id="in-start" type="number" min="0" step="100" inputmode="numeric"></label>
+            <label for="in-month">Monthly ($)<input id="in-month" type="number" min="0" step="25" value="150" inputmode="numeric"></label>
+            <label for="in-years">Years<input id="in-years" type="number" min="1" max="50" value="10" inputmode="numeric"></label>
+          </div>
+          <div class="chart-card">
+            <div class="chartwrap"><svg id="proj" viewBox="0 0 640 280" role="img" aria-label="Projected portfolio value. Hover or use arrow keys for values."></svg><div class="tip" hidden></div></div>
+            <div class="proj-sum" id="proj-sum"></div>
+          </div>
+          <p class="note">Range shows a weak (10th percentile) and strong (90th percentile) outcome under a simplified model. Real markets can do worse. Nothing here is a guarantee.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANALYST -->
+  <section class="block" id="analyst">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <div class="eyebrow">Step 5</div>
+          <h2>AI analyst</h2>
+          <p>Ask anything about your matches, an investment type or what this week's rates mean for you. The analyst sees your profile, your ranked matches, your plan and the rate board.</p>
+        </div>
+      </div>
+      <div class="chat">
+        <div class="chat-head">
+          <strong>First Position Analyst</strong>
+          <span class="ctx" id="chat-ctx"></span>
+        </div>
+        <div class="log" id="log">
+          <div class="msg ai"><p>Hi. I can walk you through any investment on this page using your profile and this week's numbers. Try a prompt below, tap <strong>AI brief</strong> on any match, or type your own question.</p></div>
+        </div>
+        <div>
+          <div class="prompts" id="prompts"></div>
+          <form class="composer" id="composer">
+            <input id="ask" placeholder="e.g. Should I start with T-bills or a high-yield savings account?" aria-label="Ask the analyst">
+            <button class="btn" id="send" type="submit">Ask</button>
+            <button class="btn ghost" id="stop" type="button" hidden>Stop</button>
+          </form>
+        </div>
+      </div>
+      <p class="offline" id="offline" hidden>The live AI analyst runs on the <a href="https://claude.ai/artifact/6WD4C9g89Zm2GbzsmmezSZ" target="_blank" rel="noopener">Claude-hosted version of this site</a> for visitors signed in to Claude. Everything else here, including the Pro briefings, works for any visitor.</p>
+    </div>
+  </section>
+
+  <!-- MARKET -->
+  <section class="block" id="market">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <div class="eyebrow">Research desk</div>
+          <h2>What's moving, and what it means for a beginner</h2>
+          <p>Recent market events, each translated into a takeaway. Snapshot as of November 4, 2026.</p>
+        </div>
+      </div>
+      <div class="market-grid">
+        <div id="briefs"></div>
+        <aside>
+          <div class="eyebrow" style="margin-bottom:10px">Real yield check (rate − 3.7% CPI)</div>
+          <div id="insights"></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- METHOD -->
+  <section class="block" id="method">
+    <div class="wrap">
+      <div class="sec-head"><div><div class="eyebrow">Under the hood</div><h2>Methodology &amp; sources</h2></div></div>
+      <div class="method-grid">
+        <div>
+          <h3>Risk score</h3>
+          <p>0–100, built from loss tolerance (45%), time horizon (35%) and primary goal (20%). A horizon under one year caps the score at 15, because money you need soon shouldn't ride the market.</p>
+        </div>
+        <div>
+          <h3>Fit score</h3>
+          <ul>
+            <li>Starts at 100.</li>
+            <li>−22 per risk level above your tolerance; −6 per level below.</li>
+            <li>−30 if the typical holding period is longer than your horizon.</li>
+            <li>−20 to −30 if it locks money up when you need access.</li>
+            <li>−35 if the realistic minimum exceeds your starting amount.</li>
+            <li>−10 per level of effort above your preference; +8 per interest match.</li>
+            <li>New investors: −12 for complex investments (individual stocks and bonds, rental property, raw land, crowdfunding, crypto) and +5 for simple, low-risk ones.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Projection</h3>
+          <p>Monthly compounding of the model allocation. Expected return is the weighted mix; volatility is the weighted mix scaled by 0.85 for diversification. The 10th/90th percentile band uses ±1.28 standard deviations of the annualized return over your horizon.</p>
+        </div>
+      </div>
+      <div class="method-grid" style="margin-top:24px">
+        <div style="grid-column:1/-1">
+          <h3>Data sources</h3>
+          <ul id="sources"></ul>
+        </div>
+      </div>
+      <p class="disclaimer">First Position is an educational tool. It does not provide personalized investment, tax or legal advice, and it does not recommend specific securities. Rates and prices change daily; verify with the source before acting. Past returns do not predict future results. Consider speaking with a licensed financial professional before investing.</p>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap">First Position · An investing-education project · Data snapshot Nov 2–4, 2026</div></footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- Market snapshot (sourced) ---------- */
+const BOARD = [
+  ["Fed funds target","3.75–4.00%","Held Oct 28 (10–2 vote)"],
+  ["3-month T-bill","4.03%","Secondary market, Nov 2"],
+  ["1-year T-bill","4.18%","Secondary market, Nov 2"],
+  ["10-year Treasury","4.91%","Constant maturity, Nov 2"],
+  ["Top high-yield savings","4.70% APY","National avg 0.38%, Oct 29"],
+  ["CPI inflation","3.7%","Sept y/y · core 2.6%"],
+  ["S&P 500","7,568.92","+10.6% YTD · Nov 3 close"],
+  ["Bitcoin","≈$77–80K","Nov 4, election-week range"],
+];
+const CURVE = [["3M",0.25,4.21],["6M",0.5,4.25],["1Y",1,4.38],["2Y",2,4.59],["5Y",5,4.70],["10Y",10,4.91],["30Y",30,5.28]];
+const CPI = 3.7;
+
+const SOURCES = [
+  ["Federal Reserve H.15 Selected Interest Rates (data for Nov 2, 2026)","https://www.federalreserve.gov/releases/h15/"],
+  ["Fed holds rates at 3.75%–4.00% in 10–2 vote (StockAnalysis, Oct 28, 2026)","https://stockanalysis.com/news/fed-holds-rates-steady-oct-2026/"],
+  ["FOMC statement, Oct 28, 2026 (Federal Reserve)","https://www.federalreserve.gov/monetarypolicy/files/monetary20261028a1.pdf"],
+  ["September 2026 CPI: 3.7% headline, 2.6% core (CPI Inflation Calculator)","https://cpiinflationcalculator.com/the-consumer-price-index-rises-0-6-in-september-2026-seasonally-adjusted-and-rises-to-3-7-annually/"],
+  ["Top high-yield savings rates, Oct 29, 2026 (Fortune)","https://fortune.com/article/best-savings-account-rates-10-29-2026/"],
+  ["How major US stock indexes fared, Nov 3, 2026 (AP via Yahoo Finance)","https://ca.finance.yahoo.com/news/major-us-stock-indexes-fared-211437939.html"],
+  ["Bitcoin price today, Nov 4, 2026 (Sunday Guardian)","https://sundayguardianlive.com/business/bitcoin-price-today-4-november-2026-btc-slips-below-77000-amid-market-uncertainty-check-market-metrics-key-drivers-317030/"],
+  ["I bond rates (TreasuryDirect)","https://treasurydirect.gov/savings-bonds/i-bonds/i-bonds-interest-rates/"],
+];
+
+const BRIEFS = [
+  {d:"Oct 28",t:"Fed holds at 3.75–4.00%, two members wanted a hike",
+   b:"The Fed paused after raising rates in September. Two officials dissented in favor of another quarter-point increase, and futures markets priced roughly 78% odds of a December hike.",
+   so:"Cash yields are likely to stay near 4% or rise. Locking a CD or buying T-bills now isn't giving up much upside; buying long bonds carries more price risk if rates climb."},
+  {d:"Oct 14",t:"Inflation runs at 3.7%, driven by energy",
+   b:"September CPI rose 3.7% from a year earlier while core inflation (excluding food and energy) was 2.6%. Oil trading above $100 a barrel, up about 78% this year, is doing much of the work.",
+   so:"A savings account paying the 0.38% national average loses over 3% a year in buying power. Inflation-linked I bonds and TIPS matter more in this kind of year."},
+  {d:"Nov 2",t:"Long Treasury yields near 5%",
+   b:"The 10-year yield sat at 4.91% on Nov 2 after closing at 5.03% on Oct 28. The 30-year is at 5.28%, and the curve slopes upward from 4.21% at three months.",
+   so:"Beginners can now earn around 4.6–5% in government bonds. Bond prices fall when yields rise, so match bond maturities to when you need the money."},
+  {d:"Nov 3",t:"Stocks up about 11% this year despite a choppy week",
+   b:"The S&P 500 closed at 7,568.92 on Nov 3, up 10.6% year to date. Chip stocks rebounded while Apple warned that memory-chip costs would squeeze margins.",
+   so:"Broad index funds spread single-company surprises like this across hundreds of holdings. Regular monthly buying smooths out entry points."},
+  {d:"Nov 4",t:"Bitcoin swings around $77–80K in election week",
+   b:"Bitcoin traded between roughly $77,000 and $80,000 as US midterm results came in, with traders reacting to political headlines.",
+   so:"Crypto can move 5–10% on news in a day. If you hold it, size it so a 50% drop wouldn't change your plans."},
+];
+
+/* ---------- Investments ---------- */
+const SECTORS = {cash:"Cash & Treasuries",bonds:"Bonds",funds:"Stocks & funds",re:"Real estate & land",alts:"Alternatives"};
+const A = [
+ {id:"hysa",name:"High-Yield Savings Account",sec:"cash",risk:1,liq:5,hor:0,min:0,effort:1,ret:4.3,vol:.5,tags:["income","simple"],
+  tag:"An FDIC-insured online bank account that pays far more than a typical savings account.",
+  now:"Top accounts pay up to 4.70% APY vs a 0.38% national average.",
+  how:"The bank pays a variable rate on your balance. You can deposit and withdraw any time, and the rate moves with the Fed.",
+  start:["Compare online banks on APY, fees and minimums","Confirm FDIC (or NCUA) insurance","Link your checking account and set an automatic transfer","Park 3–6 months of expenses here first"],
+  pros:["Insured up to $250K per depositor, per bank","Money available within 1–2 days","Zero chance of losing principal"],
+  cons:["Rate can drop whenever the Fed cuts","Interest taxed as ordinary income","Barely keeps pace with 3.7% inflation"],
+  tax:"Interest is taxed as ordinary income each year."},
+ {id:"cds",name:"Certificates of Deposit",sec:"cash",risk:1,liq:2,hor:.5,min:500,effort:1,ret:4.2,vol:.5,tags:["income","simple"],
+  tag:"Lock cash at a fixed rate for 3 months to 5 years.",
+  now:"Fixed rates protect you if the Fed cuts, but you miss out if it hikes again.",
+  how:"You agree to leave the money for a set term in exchange for a guaranteed rate. Withdrawing early costs a penalty, often a few months of interest.",
+  start:["Decide when you'll need the money","Compare CD rates at online banks and credit unions","Consider a ladder: split money across 6, 12 and 18-month CDs","Note the early-withdrawal penalty before opening"],
+  pros:["Guaranteed rate for the whole term","FDIC insured","Ladders give regular access to part of your cash"],
+  cons:["Early-withdrawal penalties","Fixed rate can fall behind if rates rise","Taxed as ordinary income"],
+  tax:"Interest is taxed yearly as ordinary income, even if not withdrawn."},
+ {id:"tbills",name:"Treasury Bills",sec:"cash",risk:1,liq:4,hor:0,min:100,effort:2,ret:4.1,vol:.5,tags:["income"],
+  tag:"Short-term loans to the US government, maturing in 4 to 52 weeks.",
+  now:"4-week 3.90%, 3-month 4.03%, 1-year 4.18% (Nov 2).",
+  how:"You buy the bill at a discount and receive the full face value at maturity. The difference is your interest. Backed by the full faith and credit of the US.",
+  start:["Open TreasuryDirect.gov or use any brokerage account","Pick a maturity that matches when you need cash","Buy at auction or on the secondary market","Turn on auto-roll to reinvest at maturity"],
+  pros:["Safest dollar investment there is","Exempt from state and local income tax","Can be sold any day through a brokerage"],
+  cons:["Rate resets each time you roll over","Selling before maturity can give a small gain or loss","TreasuryDirect's site is clunky"],
+  tax:"Federal income tax only. No state or local tax, a real edge in high-tax states."},
+ {id:"ibonds",name:"Series I Savings Bonds",sec:"cash",risk:1,liq:2,hor:1,min:25,effort:2,ret:4.26,vol:.5,tags:["inflation"],
+  tag:"Government savings bonds whose rate adjusts with inflation every six months.",
+  now:"4.26% composite for May–Oct 2026 purchases (0.90% fixed). A new rate is set every Nov 1 and May 1.",
+  how:"The rate combines a fixed rate set at purchase and an inflation rate reset twice a year. Interest compounds and is paid when you cash out.",
+  start:["Create a TreasuryDirect account","Buy up to $10,000 per person per year electronically","Plan to hold at least 1 year (required)","Hold 5+ years to avoid losing 3 months of interest"],
+  pros:["Protects buying power when inflation spikes","Cannot lose value","State and local tax exempt"],
+  cons:["Locked for the first 12 months","$10K yearly purchase limit","Only available through TreasuryDirect"],
+  tax:"Federal tax is deferred until you redeem. Tax-free if used for qualified education costs (income limits apply)."},
+ {id:"tnotes",name:"Treasury Notes & Bonds",sec:"bonds",risk:2,liq:4,hor:2,min:100,effort:2,ret:4.7,vol:5,tags:["income"],
+  tag:"Government debt maturing in 2 to 30 years that pays interest every six months.",
+  now:"2-year 4.59%, 5-year 4.70%, 10-year 4.91%, 30-year 5.28% (Nov 2).",
+  how:"You lend to the government for a fixed term and receive a coupon twice a year, then your principal back at maturity. Prices move opposite to rates in between.",
+  start:["Match the maturity to a future goal (e.g. 2-year for a car fund)","Buy at auction via TreasuryDirect or a brokerage","Or buy a Treasury ETF for daily liquidity","Hold to maturity to guarantee your yield"],
+  pros:["Lock today's near-5% yields for years","No default risk","Steady semiannual income"],
+  cons:["Price falls if rates rise and you sell early","Long bonds are surprisingly volatile","Fixed coupon loses to high inflation"],
+  tax:"Federal tax on interest; exempt from state and local tax."},
+ {id:"bondfund",name:"Bond Funds & ETFs",sec:"bonds",risk:2,liq:5,hor:3,min:1,effort:1,ret:4.8,vol:6,tags:["income","simple"],
+  tag:"One fund holding thousands of government and corporate bonds.",
+  now:"Total-market bond funds track yields in the mid-4% range as of early November.",
+  how:"The fund collects interest from its bonds and pays monthly dividends. There's no maturity date, so its price moves with interest rates.",
+  start:["Open a brokerage account (fractional shares are common)","Look for a total bond market fund with an expense ratio under 0.10%","Check its duration: higher means more rate sensitivity","Set up automatic monthly investing"],
+  pros:["Instant diversification across issuers","Monthly income","Buy or sell any trading day"],
+  cons:["No maturity, so no guaranteed return of principal","Lost value in 2022 when rates jumped","Corporate holdings add credit risk"],
+  tax:"Dividends taxed as ordinary income. Treasury portions may be state-tax exempt."},
+ {id:"corpbonds",name:"Corporate & Municipal Bonds",sec:"bonds",risk:2,liq:3,hor:3,min:1000,effort:3,ret:5.4,vol:7,tags:["income"],
+  tag:"Individual bonds issued by companies or state and local governments.",
+  now:"Investment-grade corporates yield a spread above Treasuries; munis are often tax-free.",
+  how:"You lend to a company or municipality at a fixed coupon. Credit ratings (AAA to BBB- is investment grade) signal default risk.",
+  start:["Learn to read a credit rating and yield-to-maturity","Use your brokerage's bond desk to search by rating and maturity","Compare muni yields on a tax-equivalent basis","Stay investment grade and spread across issuers"],
+  pros:["Higher yield than Treasuries","Munis often federal (and in-state) tax-free","Known payout schedule"],
+  cons:["Default and downgrade risk","Wide bid-ask spreads on small trades","Requires real research"],
+  tax:"Corporate interest fully taxable. Muni interest usually federally tax-exempt."},
+ {id:"index",name:"Broad Stock Index Funds",sec:"funds",risk:3,liq:5,hor:5,min:1,effort:1,ret:9.5,vol:16,tags:["simple"],
+  tag:"Own the whole market, like the S&P 500 or total US stock market, in one fund.",
+  now:"S&P 500 at 7,568.92, up 10.6% year to date (Nov 3 close).",
+  how:"The fund holds every stock in an index in proportion to its size. You earn what the market earns, minus a tiny fee.",
+  start:["Open a brokerage account or Roth IRA (if you have earned income)","Choose an S&P 500 or total-market ETF with fees under 0.05%","Buy fractional shares with as little as $1","Automate a monthly contribution and ignore the daily news"],
+  pros:["Historically about 10% a year long-run (not guaranteed)","Rock-bottom fees","Zero stock picking required"],
+  cons:["Can fall 30–50% in a crash","Needs 5+ years to ride out downturns","Concentrated in large tech companies today"],
+  tax:"Qualified dividends and long-term gains (held over 1 year) get lower tax rates. A Roth IRA can make growth tax-free."},
+ {id:"target",name:"Target-Date Funds",sec:"funds",risk:2,liq:5,hor:10,min:1,effort:1,ret:7.8,vol:11,tags:["simple"],
+  tag:"A single fund that mixes stocks and bonds and gets more conservative as your target year nears.",
+  now:"Common default in 401(k) plans; pick the year closest to when you'll use the money.",
+  how:"The fund manager rebalances for you along a 'glide path', shifting from stocks toward bonds over time.",
+  start:["Choose the fund year closest to your retirement or goal","Compare expense ratios (index-based ones run 0.08–0.15%)","Use it as your only fund: don't mix with others","Contribute automatically"],
+  pros:["Fully hands-off diversification","Automatic rebalancing","Great for retirement accounts"],
+  cons:["One-size-fits-all risk level","Fees higher than plain index funds","Can be too conservative for young savers"],
+  tax:"Best held in an IRA or 401(k), where rebalancing creates no tax bill."},
+ {id:"mutual",name:"Actively Managed Mutual Funds",sec:"funds",risk:3,liq:4,hor:5,min:1000,effort:1,ret:8.5,vol:16,tags:[],
+  tag:"Professional managers pick stocks or bonds trying to beat the market.",
+  now:"Over 10–15 years, most active large-cap funds trail their benchmark index (S&P SPIVA scorecards).",
+  how:"You buy shares at the fund's end-of-day price. A manager trades holdings based on research, charging a higher fee for it.",
+  start:["Read the prospectus: strategy, fees, manager tenure","Keep expense ratios under ~0.75%; avoid sales loads","Compare 10-year returns against the matching index","Check the minimum (often $1,000–$3,000)"],
+  pros:["Access to specialized strategies","Professional management","Some funds have strong long-run records"],
+  cons:["Higher fees eat returns","Most underperform their index long-term","Can distribute taxable gains you didn't choose"],
+  tax:"Capital-gain distributions are taxable yearly in a regular account, even if you never sell."},
+ {id:"dividend",name:"Dividend Stocks & ETFs",sec:"funds",risk:3,liq:5,hor:5,min:1,effort:2,ret:8.5,vol:14,tags:["income"],
+  tag:"Established companies that share profits with you in regular cash payments.",
+  now:"With 10-year Treasuries near 4.9%, dividend yields face stiff competition from bonds.",
+  how:"Companies pay quarterly dividends from earnings. Dividend ETFs hold dozens to hundreds of these firms.",
+  start:["Start with a dividend-growth ETF rather than single stocks","Check yield, payout ratio and dividend growth history","Turn on dividend reinvestment (DRIP)","Watch out for very high yields, which can signal trouble"],
+  pros:["Cash income plus growth","Mature, profitable companies","Reinvested dividends compound"],
+  cons:["Dividends can be cut","Less growth than the broad market in tech-led years","Rate-sensitive when bonds pay well"],
+  tax:"Qualified dividends taxed at 0/15/20% rates."},
+ {id:"stocks",name:"Individual Stocks",sec:"funds",risk:4,liq:5,hor:5,min:1,effort:4,ret:9.5,vol:32,tags:["tech"],
+  tag:"Buy shares of specific companies you've researched.",
+  now:"Single-stock risk in action: Apple fell Nov 3 after warning about memory-chip costs.",
+  how:"You own a slice of a company and gain or lose with its results and the market's mood. Returns vary enormously between companies.",
+  start:["Learn the basics: revenue growth, margins, P/E, debt","Read the company's 10-K and recent earnings call","Cap any single stock at ~5% of your portfolio","Keep a written thesis and review it quarterly"],
+  pros:["Unlimited upside on winners","Builds real analytical skill","No fund fees"],
+  cons:["A single company can drop 50%+ or go to zero","Time-intensive","Most stock pickers trail the index"],
+  tax:"Short-term gains (under 1 year) taxed as income; long-term gains taxed lower. Losses can offset gains."},
+ {id:"reits",name:"REITs",sec:"re",risk:3,liq:5,hor:5,min:1,effort:1,ret:8.5,vol:19,tags:["realestate","income"],
+  tag:"Publicly traded companies that own apartments, warehouses, data centers and more.",
+  now:"REITs are rate-sensitive; long yields near 5% raise their borrowing costs.",
+  how:"REITs must pay out at least 90% of taxable income as dividends. You buy them like stocks, or own hundreds through a REIT ETF.",
+  start:["Start with a broad REIT index ETF","Look at sector mix (residential, industrial, data centers, office)","Compare dividend yield and funds from operations (FFO)","Hold in an IRA if you can (dividends are taxed as income)"],
+  pros:["Real estate exposure with $1","High dividends","Sell any trading day"],
+  cons:["Volatile like stocks","Hurt by rising rates","Dividends mostly non-qualified"],
+  tax:"Most REIT dividends taxed as ordinary income (some get a 20% deduction under Sec. 199A)."},
+ {id:"recrowd",name:"Real-Estate Crowdfunding",sec:"re",risk:4,liq:1,hor:5,min:100,effort:2,ret:7,vol:12,tags:["realestate"],
+  tag:"Pool money online with other investors to own pieces of private properties or loans.",
+  now:"Platforms such as Fundrise or Arrived offer low minimums but limited redemption windows.",
+  how:"A platform buys properties or makes real-estate loans and passes rent, interest and appreciation to investors. Shares are not traded on an exchange.",
+  start:["Read the offering circular and fee schedule","Check the redemption policy and any early-exit penalties","Look at the platform's track record through 2022–2024","Start small and treat the money as locked for 5 years"],
+  pros:["Private real estate with low minimums","Passive income","Less tied to daily market swings"],
+  cons:["Hard to sell; redemptions can be suspended","Fees of 1–2% a year are common","Platform risk"],
+  tax:"Distributions usually taxed as ordinary income; you may receive a 1099-DIV or K-1."},
+ {id:"rental",name:"Rental Property",sec:"re",risk:4,liq:1,hor:7,min:20000,effort:5,ret:9,vol:15,tags:["realestate","income"],
+  tag:"Buy a house or small multifamily and rent it out.",
+  now:"Mortgage costs track the 10-year yield (4.91%), so financing is expensive right now.",
+  how:"Rent pays the mortgage and expenses; you build equity as the loan amortizes and the property appreciates. Leverage magnifies gains and losses.",
+  start:["Run the numbers: rent vs mortgage, taxes, insurance, repairs, vacancy","Aim for positive cash flow after a 5–10% vacancy reserve","Get pre-approved; investment loans usually need 15–25% down","Consider house hacking: live in one unit of a duplex"],
+  pros:["Monthly cash flow plus appreciation","Leverage on a mortgage","Big tax advantages (depreciation)"],
+  cons:["Large upfront cash","Tenants, repairs and vacancies","Very illiquid, high transaction costs"],
+  tax:"Rental income taxable but offset by depreciation and expenses. Sales may qualify for a 1031 exchange."},
+ {id:"land",name:"Raw Land",sec:"re",risk:4,liq:1,hor:10,min:5000,effort:4,ret:6,vol:15,tags:["realestate"],
+  tag:"Buy undeveloped land and hold it for appreciation, development or lease income.",
+  now:"Few lenders finance land, so most buyers pay cash or use seller financing.",
+  how:"Value comes from location, zoning and future development. Land produces no income unless leased for farming, hunting, solar or cell towers.",
+  start:["Research zoning, road access, utilities and flood maps","Get a survey and title search before buying","Budget for property taxes with no offsetting income","Look at growth paths: nearby development plans, highway projects"],
+  pros:["No tenants or buildings to maintain","Can be cheap in rural markets","Finite supply"],
+  cons:["Usually no income while you hold","Hard to finance and slow to sell","Value depends on future development"],
+  tax:"Property taxes due yearly. Gains taxed as capital gains when sold."},
+ {id:"gold",name:"Gold & Commodities",sec:"alts",risk:3,liq:5,hor:3,min:1,effort:1,ret:5,vol:15,tags:["inflation"],
+  tag:"Gold, silver, oil and other raw materials, usually held through ETFs.",
+  now:"WTI crude is above $100 a barrel, up about 78% this year.",
+  how:"Commodity ETFs hold physical metal or futures contracts. Prices rise with inflation fears, supply shocks and a weaker dollar.",
+  start:["Prefer a physically backed gold ETF over futures-based funds","Keep it to roughly 5–10% of a portfolio","Know that futures funds can lag the commodity's spot price","Avoid buying coins at large dealer markups"],
+  pros:["Diversifier when stocks and bonds fall together","Inflation hedge over long periods","Easy to buy through ETFs"],
+  cons:["No income or cash flow","Long flat stretches","Commodity prices swing on headlines"],
+  tax:"Physically backed gold ETFs are taxed as collectibles (up to 28% on long-term gains)."},
+ {id:"crypto",name:"Cryptocurrency",sec:"alts",risk:5,liq:5,hor:5,min:1,effort:3,ret:12,vol:60,tags:["tech"],
+  tag:"Digital assets like Bitcoin and Ethereum, held directly or through spot ETFs.",
+  now:"Bitcoin ≈ $77–80K during election week (Nov 4).",
+  how:"Prices are set entirely by supply and demand on 24/7 markets. Bitcoin has a fixed supply cap; Ethereum powers smart contracts.",
+  start:["Decide on a max allocation (many advisors suggest 1–5%)","Use a spot Bitcoin or Ether ETF in a brokerage for simplicity","If buying coins, use a major regulated exchange and turn on 2FA","Dollar-cost average instead of buying all at once"],
+  pros:["Large historical upside","Trades 24/7","Low correlation in some periods"],
+  cons:["Drawdowns of 50–80% have happened repeatedly","Scams, hacks and lost keys","Regulation still evolving"],
+  tax:"Taxed as property. Every sale or swap is a taxable event; track your cost basis."},
+];
+
+/* ---------- Level copy: b = plain English (new), m/s/p = expert lens ---------- */
+const LV_TXT={
+ hysa:{b:"It's a savings account, usually at an online bank, that pays about 10 times more interest than a typical one. Your money is insured and you can take it out any time.",m:"APY vs the 3-month T-bill (4.03%): top accounts pay about 67 bp more, but bill interest is state-tax exempt.",s:"Use as the liquidity sleeve; compare after-tax yield against T-bills if you pay state income tax.",p:"Teaser rates and balance tiers; rates reprice within days of a Fed move."},
+ cds:{b:"You promise the bank you'll leave your money alone for a set time, like one year, and the bank promises you a fixed interest rate in return.",m:"Yield vs same-maturity Treasury; early-withdrawal penalty measured in months of interest.",s:"Ladder maturities; brokered CDs trade on a secondary market and can be sold before maturity.",p:"Callable CDs let the bank end your rate early if rates fall."},
+ tbills:{b:"You lend the US government money for a few weeks or months, and it pays you back with a little extra. It's considered the safest investment there is.",m:"Discount yield vs bond-equivalent yield; tax-equivalent yield in your state.",s:"Roll a 4–26 week ladder; with ~78% odds of a December hike priced, short rolls capture higher rates.",p:"Reinvestment risk: yields fall quickly once a cutting cycle starts."},
+ ibonds:{b:"A government savings bond whose interest rate rises when prices in stores rise, so your savings keep their buying power.",m:"The fixed rate (0.90% for May–Oct 2026) is your real yield for 30 years; compare it with TIPS real yields.",s:"Buy up to the $10K annual limit when the fixed rate is attractive; redeem after 5 years to avoid the interest penalty.",p:"12-month lockup; the inflation component resets every six months and can fall."},
+ tnotes:{b:"You lend the government money for 2 to 30 years and get interest every six months. Hold it to the end and you get all your money back.",m:"Duration (about 8 for a 10-year), convexity and the 2s10s slope (+32 bp).",s:"Barbell (bills + 10s) vs bullet (5s at 4.70%). The 10-year's carry over a 1-year bill (73 bp) is wiped out by about a 9 bp rise in yield.",p:"Selling before maturity locks in mark-to-market losses if yields have risen."},
+ bondfund:{b:"One fund that owns thousands of loans to governments and companies. It pays you interest every month, and its price moves up and down a little.",m:"SEC yield, effective duration, credit mix and expense ratio.",s:"Match fund duration to your horizon; pair a core aggregate fund with a short-duration sleeve while hikes are priced.",p:"No maturity date: a 2022-style rate shock hits the fund's price with no pull back to par."},
+ corpbonds:{b:"You lend money to a company or a city. They pay more interest than the government because there's a small chance they can't pay you back.",m:"Option-adjusted spread to Treasuries, rating, yield-to-worst, and tax-equivalent yield for munis.",s:"Ladder investment-grade issues; munis win when your combined tax rate is high.",p:"Call risk, thin liquidity and wide bid-ask spreads on small lots."},
+ index:{b:"Instead of picking one company, you buy a tiny piece of hundreds of them at once. When the overall market grows, so does your money.",m:"Forward P/E, earnings yield vs the 10-year, top-10 concentration, tracking error.",s:"Core holding; harvest tax losses by swapping between similar index funds.",p:"Cap-weighted indexes are heavily concentrated in mega-cap tech today."},
+ target:{b:"You pick the year you'll need the money, like 2065, and the fund automatically moves from riskier to safer investments as that year gets closer.",m:"Equity share on the glide path at your age, underlying fees, and whether the path runs to or through retirement.",s:"Use as a one-fund solution in a tax-advantaged account; don't layer other funds on top.",p:"Glide paths vary widely; two 2060 funds can hold very different stock weights."},
+ mutual:{b:"A professional picks investments for you and charges a fee. Many fail to beat simpler, cheaper index funds over the long run.",m:"Expense ratio, active share, 10-year alpha vs benchmark, turnover, manager tenure.",s:"Use only where active management has an edge (parts of fixed income, small caps); prefer ETF share classes for tax efficiency.",p:"Year-end capital-gains distributions create tax bills in taxable accounts."},
+ dividend:{b:"Some companies share part of their profits with shareholders as cash, usually every three months. You get paid just for owning the stock.",m:"Payout ratio, dividend growth rate, free-cash-flow coverage, yield vs the 10-year.",s:"Favor dividend growth over the highest yield; hold non-qualified payers in tax-advantaged accounts.",p:"Yield traps: an unusually high yield often signals a coming cut."},
+ stocks:{b:"Buying a stock means owning a small slice of one company. If the company does well your slice is worth more; if it struggles, you can lose a lot.",m:"EV/EBITDA, free-cash-flow yield, revenue growth vs margin trend, ROIC, estimate revisions.",s:"Write a thesis with catalysts and an exit; size each position by its volatility.",p:"Concentration and behavioral bias; most stock pickers trail the index."},
+ reits:{b:"A company that owns buildings like apartments and warehouses and pays out most of the rent to you. You can buy it like a stock with a few dollars.",m:"Price/FFO, AFFO yield, debt maturity ladder, implied cap rate vs private-market values.",s:"Tilt by sector (data centers, industrial) and add when public REITs trade below private values.",p:"Rate sensitivity: higher long yields raise borrowing costs and cap rates."},
+ recrowd:{b:"You team up online with other investors to own part of real buildings or real-estate loans. You can start small, but getting your money out quickly is hard.",m:"Target vs realized IRR, total fee load, redemption terms, loan-to-value of the underlying assets.",s:"Treat it as illiquid private real estate and size it like a 5-year lockup.",p:"Redemption gates and stale valuations can hide losses."},
+ rental:{b:"You buy a house and rent it out. The rent pays your mortgage and costs, and you hope the house is worth more when you sell.",m:"Cap rate, DSCR, cash-on-cash return, price-to-rent, levered IRR.",s:"Underwrite at today's 7%+ mortgage rates; leverage only helps when the cap rate beats your loan rate.",p:"Negative leverage, vacancies and repair surprises; very illiquid."},
+ land:{b:"You buy empty land and hold it, hoping it becomes more valuable as towns grow, or you rent it to a farmer. It usually earns little each year.",m:"$/acre vs comparable sales, soil quality (CSR2), cash-rent yield, zoning and utility access.",s:"Look for embedded options: rezoning, transmission lines, data-center or solar demand.",p:"Carrying costs (property tax) with little income; long, uncertain exits."},
+ gold:{b:"Gold is a metal people buy when they're worried about the economy or rising prices. It pays no interest, but it often holds its value when stocks fall.",m:"Real yields, the dollar, central-bank buying, and futures roll yield for commodity funds.",s:"A 5–10% diversifier; prefer physically backed ETFs over futures-based funds.",p:"Collectibles tax rate (up to 28%) and long flat stretches."},
+ crypto:{b:"Digital money that lives on the internet. Its price swings a lot because it depends only on how much people want it, so only invest what you could afford to lose.",m:"ETF flows, exchange reserves, funding rates, realized volatility (about 60%).",s:"Size by risk: at ~60% volatility, a 2% weight adds about 1.2 points of standalone portfolio volatility.",p:"Custody, exchange and regulatory risk; repeated 50–80% drawdowns."},
+};
+const COMPLEX=new Set(["stocks","rental","land","corpbonds","crypto","recrowd"]);
+const GL=[
+ [["APY"],"Annual percentage yield: the interest you earn in a year, including interest on your interest."],
+ [["T-bill","T-bills","Treasury bill","Treasury bills"],"A short-term loan to the US government, from 4 weeks to 1 year."],
+ [["Treasury","Treasuries"],"Debt issued by the US government, considered the safest investment."],
+ [["yield","yields"],"The yearly income an investment pays, as a percentage of its price."],
+ [["inflation"],"How fast prices are rising. At 3.7% inflation, $100 of groceries costs $103.70 a year later."],
+ [["CPI"],"Consumer Price Index: the government's main measure of inflation."],
+ [["Fed"],"The Federal Reserve, the US central bank. It sets short-term interest rates."],
+ [["Fed funds"],"The interest rate the Federal Reserve targets. Savings and loan rates follow it."],
+ [["index fund","index funds"],"A fund that owns every company in a market index, like the S&P 500, for a very low fee."],
+ [["ETF","ETFs"],"Exchange-traded fund: a basket of investments you can buy or sell like a single stock."],
+ [["S&P 500"],"An index of 500 of the largest US companies, often used to mean the stock market."],
+ [["dividend","dividends"],"Cash a company pays its shareholders out of its profits."],
+ [["bond","bonds"],"A loan you make to a government or company in exchange for regular interest."],
+ [["P/E"],"Price-to-earnings ratio: how many dollars investors pay for $1 of a company's yearly profit."],
+ [["market cap"],"The total value of all of a company's shares."],
+ [["gross margin"],"The share of each sales dollar left after paying to make the product."],
+ [["volatility"],"How much a price swings up and down. Higher volatility means bigger swings."],
+ [["diversification","diversifier"],"Spreading money across many investments so one bad one can't sink you."],
+ [["liquidity"],"How quickly you can turn an investment into cash without losing value."],
+ [["expense ratio","expense ratios"],"The yearly fee a fund charges, as a percentage of what you invest."],
+ [["REIT","REITs"],"Real estate investment trust: a company that owns property and pays most of its rent income to shareholders."],
+ [["cap rate"],"A property's yearly income after costs divided by its price, like a yield for real estate."],
+ [["cash flow"],"Money left over after all costs are paid."],
+ [["appreciation"],"An increase in an investment's value over time."],
+ [["ARR"],"Annual recurring revenue: how much a company's current contracts would bring in over a year."],
+ [["capex"],"Capital expenditures: money spent on long-lasting things like buildings and equipment."],
+ [["earnings"],"A company's profit."],
+ [["drawdown","drawdowns"],"A drop from a peak to a low point."],
+ [["ladder"],"Splitting money across bonds or CDs that mature at different times."],
+ [["mortgage"],"A loan used to buy property, repaid monthly over many years."],
+ [["FDIC"],"Government insurance that protects bank deposits up to $250,000 per depositor, per bank."],
+ [["brokerage account","brokerage"],"An account at an investing company that lets you buy stocks, funds and bonds."],
+ [["Roth IRA"],"A retirement account where investments grow tax-free if you follow the rules."],
+ [["duration"],"How much a bond's price moves when rates change. Duration 8 means about an 8% drop per 1-point rate rise."],
+ [["CD","CDs"],"Certificate of deposit: a bank account that pays a fixed rate if you leave the money for a set time."],
+ [["analyst target","price target"],"A Wall Street analyst's estimate of where a stock's price will be in about a year."],
+];
+const GL_MAP={};GL.forEach(([vs,d])=>vs.forEach(v=>GL_MAP[v.toLowerCase()]=[vs[0],d]));
+const GL_SRC="\\b("+Object.keys(GL_MAP).sort((a,b)=>b.length-a.length).map(k=>k.replace(/[.*+?^${}()|[\]\\\/&]/g,"\\$&")).join("|")+")\\b";
+const GL_TEST=new RegExp(GL_SRC,"i");
+
+/* ---------- Experience level ---------- */
+const LEVELS={new:{name:"New investor",desc:"Viewing as a new investor: plain-English guides, definitions on dotted words, and a basics section first."},intermediate:{name:"Intermediate",desc:"Viewing as an intermediate investor: full guides, metrics and side-by-side comparisons."},expert:{name:"Expert",desc:"Viewing as an expert: frameworks, chart statistics, analyst takes and the Expert desk tools."}};
+const LV_KEY="fp_level_v1";
+let level="new";try{const v=localStorage.getItem(LV_KEY);if(LEVELS[v])level=v}catch(e){}
+
+/* ---------- Quiz ---------- */
+const Q = [
+ {id:"goal",n:"1",t:"What's the main job for this money?",o:[["safety","Emergency fund"],["short","A purchase in 1–3 years"],["growth","Long-term growth"],["income","Steady income"],["learn","Learn by investing"]]},
+ {id:"hor",n:"2",t:"When will you need most of it?",o:[["0","Under 1 year"],["1","1–3 years"],["2","3–7 years"],["3","7–15 years"],["4","15+ years"]]},
+ {id:"drop",n:"3",t:"Your investments fall 25% in a month. You…",o:[["0","Sell everything"],["1","Sell some"],["2","Hold and wait"],["3","Buy more"]]},
+ {id:"amt",n:"4",t:"How much can you start with?",o:[["0","Under $500"],["1","$500–5K"],["2","$5K–25K"],["3","$25K–100K"],["4","$100K+"]]},
+ {id:"liq",n:"5",t:"How quickly might you need to pull money out?",o:[["3","Any time"],["2","Within months"],["1","I can lock it for years"]]},
+ {id:"eff",n:"6",t:"How hands-on do you want to be?",o:[["1","Set it and forget it"],["2","Check in monthly"],["4","Research actively"],["5","Manage property myself"]]},
+ {id:"int",n:"7",t:"What interests you? (pick any)",multi:true,o:[["realestate","Real estate & land"],["tech","Tech & crypto"],["income","Steady income"],["inflation","Inflation protection"],["simple","Keep it simple"]]},
+];
+const HOR_YEARS=[0.5,2,5,10,20], HOR_TXT=["Under 1 yr","1–3 yrs","3–7 yrs","7–15 yrs","15+ yrs"];
+const AMT_VAL=[250,2500,15000,60000,150000], AMT_TXT=["Under $500","$500–5K","$5K–25K","$25K–100K","$100K+"];
+const LIQ_TXT={3:"Any time",2:"Within months",1:"Can lock years"};
+const SAMPLE={goal:"growth",hor:"3",drop:"2",amt:"1",liq:"2",eff:"2",int:["realestate","simple"]};
+const KEY="fp_profile_v1";
+
+let P = load() || {...SAMPLE, int:[...SAMPLE.int]};
+let isSample = !load();
+
+function load(){try{const v=JSON.parse(localStorage.getItem(KEY));return v&&v.goal?v:null}catch(e){return null}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(P))}catch(e){}}
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money=(v,c)=>{if(v<0)return"−"+money(-v,c);if(c&&Math.abs(v)>=1e6)return"$"+(v/1e6).toFixed(v>=1e7?1:2)+"M";if(c&&Math.abs(v)>=1e4)return"$"+Math.round(v/1e3)+"K";return"$"+Math.round(v).toLocaleString("en-US")};
+const riskVar=r=>`var(--r${r})`;
+const dots=r=>`<span class="dots" aria-hidden="true">${[1,2,3,4,5].map(i=>`<i style="${i<=r?`background:${riskVar(r)};border-color:${riskVar(r)}`:""}"></i>`).join("")}</span>`;
+const RISK_WORD=["","Very low","Low","Moderate","High","Very high"];
+const LIQ_WORD=["","Locked","Low","Medium","High","Daily"];
+
+/* Crosshair + tooltip for any SVG chart inside a .chartwrap.
+   opt = {xs:[svg x per index], top, bottom, pts(i)->[{x,y,c}], row(i)->{title, lines:[[color,label,value]], note}} */
+const NS="http://www.w3.org/2000/svg";
+function bindHover(wrap,opt){
+  const svg=wrap.querySelector("svg"),tip=wrap.querySelector(".tip");if(!svg||!tip)return;
+  svg._hov=opt;svg._cur=-1;
+  if(svg._bound)return;svg._bound=true;
+  svg.setAttribute("tabindex","0");
+  const show=i=>{const o=svg._hov;if(!o||i<0||i>=o.xs.length)return;svg._cur=i;
+    let g=svg.querySelector("g.hov");if(!g){g=document.createElementNS(NS,"g");g.setAttribute("class","hov");g.setAttribute("pointer-events","none");svg.appendChild(g)}
+    const x=o.xs[i],pts=o.pts(i);
+    g.innerHTML=`<line x1="${x}" x2="${x}" y1="${o.top}" y2="${o.bottom}" stroke="var(--ink)" stroke-width="1" stroke-dasharray="3 3" opacity=".55"/>`+pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="5" fill="var(--surface)" stroke="${p.c}" stroke-width="2.5"/>`).join("");
+    const d=o.row(i);
+    tip.innerHTML=`<b>${esc(d.title)}</b>`+d.lines.map(l=>`<div><i style="background:${l[0]}"></i>${esc(l[1])}<span>${esc(l[2])}</span></div>`).join("")+(d.note?`<small>${esc(d.note)}</small>`:"");
+    tip.hidden=false;
+    const vb=svg.viewBox.baseVal,r=svg.getBoundingClientRect(),w=wrap.getBoundingClientRect();
+    const sx=r.width/vb.width,sy=r.height/vb.height;
+    const px=r.left-w.left+x*sx,py=r.top-w.top+(pts.length?Math.min(...pts.map(p=>p.y)):o.top)*sy;
+    const tw=tip.offsetWidth,th=tip.offsetHeight;
+    let left=px+14;if(left+tw>w.width)left=px-14-tw;if(left<0)left=Math.max(0,Math.min(w.width-tw,px-tw/2));
+    let top=py-th-10;if(top<0)top=Math.min(py+14,w.height-th);
+    tip.style.left=left+"px";tip.style.top=Math.max(0,top)+"px";
+  };
+  const hide=()=>{const g=svg.querySelector("g.hov");if(g)g.remove();tip.hidden=true;svg._cur=-1};
+  const near=cx=>{const o=svg._hov,vb=svg.viewBox.baseVal,r=svg.getBoundingClientRect();const x=(cx-r.left)*vb.width/r.width;let b=0,bd=1e9;o.xs.forEach((xx,i)=>{const d=Math.abs(xx-x);if(d<bd){bd=d;b=i}});return b};
+  svg.addEventListener("pointermove",e=>{const i=near(e.clientX);if(i!==svg._cur)show(i)});
+  svg.addEventListener("pointerdown",e=>show(near(e.clientX)));
+  svg.addEventListener("pointerleave",e=>{if(e.pointerType==="mouse")hide()});
+  svg.addEventListener("keydown",e=>{const n=svg._hov.xs.length;if(e.key==="ArrowRight"){show(Math.min(n-1,svg._cur+1));e.preventDefault()}else if(e.key==="ArrowLeft"){show(Math.max(0,svg._cur<0?n-1:svg._cur-1));e.preventDefault()}else if(e.key==="Escape")hide()});
+  svg.addEventListener("focus",()=>{if(svg._cur<0)show(svg._hov.xs.length-1)});
+  svg.addEventListener("blur",hide);
+  svg._redraw=()=>{if(svg._cur>=0)show(svg._cur)};
+}
+
+function buildQuiz(){
+  const lv=`<fieldset class="q"><legend><span>1</span>How much investing experience do you have?</legend><div class="opts">${[["new","I'm new"],["intermediate","I know the basics"],["expert","I'm experienced"]].map(([v,l])=>`<label class="opt" for="q-lvl-${v}"><input id="q-lvl-${v}" type="radio" name="lvl" value="${v}" ${level===v?"checked":""}><span>${l}</span></label>`).join("")}</div></fieldset>`;
+  $("#quiz").innerHTML=lv+Q.map((q,qi)=>`<fieldset class="q"><legend><span>${qi+2}</span>${esc(q.t)}</legend><div class="opts">${q.o.map(([v,l])=>{
+    const id=`q-${q.id}-${v}`;const checked=q.multi?P[q.id].includes(v):P[q.id]===v;
+    return `<label class="opt" for="${id}"><input id="${id}" type="${q.multi?"checkbox":"radio"}" name="${q.id}" value="${v}" ${checked?"checked":""}><span>${esc(l)}</span></label>`}).join("")}</div></fieldset>`).join("");
+}
+$("#quiz").addEventListener("change",e=>{
+  const t=e.target;if(!t.name)return;
+  if(t.name==="lvl"){setLevel(t.value);return}
+  if(t.type==="checkbox"){P.int=[...document.querySelectorAll('input[name="int"]:checked')].map(i=>i.value)}else P[t.name]=t.value;
+  isSample=false;save();
+  $("#in-start").value=AMT_VAL[+P.amt];
+  update();
+});
+$("#reset").addEventListener("click",()=>{P={...SAMPLE,int:[...SAMPLE.int]};isSample=true;try{localStorage.removeItem(KEY)}catch(e){}buildQuiz();$("#in-start").value=AMT_VAL[+P.amt];update()});
+
+/* ---------- Scoring ---------- */
+function profile(){
+  const goalW={safety:0,short:.2,growth:1,income:.5,learn:.7}[P.goal];
+  let s=.45*(+P.drop/3)+.35*(+P.hor/4)+.2*goalW;
+  if(+P.hor===0||P.goal==="safety")s=Math.min(s,.15);
+  const tol=1+Math.round(s*4);
+  return {s,score:Math.round(s*100),tol,years:HOR_YEARS[+P.hor],amount:AMT_VAL[+P.amt],liq:+P.liq,eff:+P.eff};
+}
+function riskLabel(s){
+  if(s<.2)return["Capital preserver","Your priority is keeping every dollar. Insured cash and short Treasuries should do most of the work."];
+  if(s<.4)return["Cautious saver","You'll accept small swings for better yield. Bonds and cash lead, with a modest slice of stocks."];
+  if(s<.62)return["Balanced grower","You can ride out downturns for long-term growth, as long as there's a stable base underneath."];
+  if(s<.82)return["Growth seeker","Your timeline and temperament can handle real volatility. Stocks should be the engine."];
+  return["Aggressive builder","You're comfortable with deep drawdowns for maximum long-run growth, including speculative positions."];
+}
+function fit(a,pr){
+  let f=100;const pos=[],warn=[];
+  const gap=a.risk-pr.tol;
+  if(gap>0){f-=22*gap;warn.push(`Riskier than your comfort level (${RISK_WORD[a.risk].toLowerCase()} vs your ${RISK_WORD[pr.tol].toLowerCase()})`)}
+  else if(gap<0){f-=6*-gap;if(P.goal==="growth"&&a.risk===1){f-=10;warn.push("Safe, but unlikely to grow much after inflation")}}
+  else pos.push("Risk level matches your profile");
+  if(pr.years<a.hor){f-=30;warn.push(`Usually needs ${a.hor>=1?a.hor+"+ years":"several months"}; your horizon is ${HOR_TXT[+P.hor].toLowerCase()}`)}
+  else if(a.hor>=3)pos.push("Your timeline is long enough to ride out swings");
+  if(pr.liq===3&&a.liq<=2){f-=30;warn.push("Locks up money you may need any time")}
+  else if(pr.liq===2&&a.liq===1){f-=20;warn.push("Hard to sell within months")}
+  else if(a.liq>=4&&pr.liq>=2)pos.push("Easy to access when you need it");
+  if(pr.amount<a.min){f-=35;warn.push(`Realistic minimum is about ${money(a.min)}`)}
+  else if(a.min<=100)pos.push(a.min<=1?"Can start with $1":"Low minimum to start");
+  if(a.effort>pr.eff){f-=10*(a.effort-pr.eff);warn.push("More hands-on than you want")}
+  const hits=a.tags.filter(t=>P.int.includes(t));
+  if(hits.length){f+=8*hits.length;pos.unshift("Matches your interest in "+hits.map(h=>({realestate:"real estate",tech:"tech & crypto",income:"income",inflation:"inflation protection",simple:"simplicity"}[h])).join(" and "))}
+  if(P.goal==="safety"&&["hysa","tbills"].includes(a.id)){f+=10;pos.unshift("Built for emergency money")}
+  if(P.goal==="income"&&a.tags.includes("income"))f+=6;
+  if(P.goal==="short"&&["cds","tbills","tnotes","hysa"].includes(a.id)){f+=8;pos.unshift("Can be matched to your purchase date")}
+  if(level==="new"){if(COMPLEX.has(a.id)){f-=12;warn.unshift("Complex for a first investment: read the guide first")}else if(a.effort<=1&&a.risk<=3){f+=5;pos.push("Beginner-friendly: little to manage")}}
+  f=Math.max(5,Math.min(99,Math.round(f)));
+  return {f,pos,warn};
+}
+const fitColor=f=>f>=75?"var(--good)":f>=50?"var(--r3)":"var(--bad)";
+
+let ranked=[],showAll=false;
+function renderMatches(){
+  const list=showAll?ranked:ranked.slice(0,6);
+  $("#match-list").innerHTML=list.map((m,i)=>{
+    const a=m.a;const rs=[...m.pos.slice(0,2).map(t=>`<li>${esc(t)}</li>`),...m.warn.slice(0,2).map(t=>`<li class="w">${esc(t)}</li>`)].slice(0,3).join("");
+    const sh=a.vol>=1?((a.ret-RF)/a.vol).toFixed(2):"—";
+    return `<article class="match"><div class="match-top"><div><div class="rank">#${i+1} · ${esc(SECTORS[a.sec])}</div><h3>${esc(a.name)}</h3>${level==="new"&&i===0?`<span class="badge">Start here</span>`:""}</div><div class="fit" style="color:${fitColor(m.f)}">${m.f}</div></div>
+    <div class="fitbar" role="img" aria-label="Fit ${m.f} of 100"><i style="width:${m.f}%;background:${fitColor(m.f)}"></i></div>
+    <span class="chip-risk">${dots(a.risk)} ${RISK_WORD[a.risk]} risk · ${LIQ_WORD[a.liq]} liquidity</span>
+    ${level==="expert"?`<div class="xstats">E[r] ${a.ret}% · σ ${a.vol}% · Sharpe ${sh}</div>`:""}
+    <ul class="reasons">${rs}</ul>
+    <div class="actions"><button class="btn small" data-brief="${a.id}">${level==="new"?"Explain simply":level==="expert"?"Expert view":"AI brief"}</button><button class="btn ghost small" data-open="${a.id}">Guide</button></div></article>`}).join("");
+  $("#show-all").textContent=showAll?"Show top 6":"Show all 18 ranked";
+  glossIn($("#match-list"));
+}
+$("#show-all").addEventListener("click",()=>{showAll=!showAll;renderMatches()});
+
+/* ---------- Library ---------- */
+let filter="all";
+function buildFilters(){
+  const opts=[["all","All 18"],...Object.entries(SECTORS)];
+  $("#filters").innerHTML=opts.map(([k,l])=>`<button type="button" data-f="${k}" aria-pressed="${k===filter}">${esc(l)}</button>`).join("");
+}
+$("#filters").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.f;buildFilters();renderLib()});
+function renderLib(){
+  const fits=Object.fromEntries(ranked.map(m=>[m.a.id,m.f]));
+  $("#lib").innerHTML=A.filter(a=>filter==="all"||a.sec===filter).map(a=>`<details class="asset" id="asset-${a.id}">
+    <summary><h3>${esc(a.name)}</h3><span class="caret" aria-hidden="true">›</span>
+      <div class="tagline">${esc(a.tag)}</div>
+      <div class="stats"><span class="chip-risk">${dots(a.risk)} ${RISK_WORD[a.risk]}</span><span>Liquidity <b>${LIQ_WORD[a.liq]}</b></span><span>Min <b>${a.min<=1?"$1":money(a.min)}</b></span><span>Your fit <b style="color:${fitColor(fits[a.id])}">${fits[a.id]}</b></span></div>
+    </summary>
+    <div class="asset-body">${libBody(a)}</div></details>`).join("");
+  glossIn($("#lib"));
+}
+function libBody(a){
+  const t=LV_TXT[a.id]||{};
+  const start=`<div><h4>How to start</h4><ol>${a.start.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>`;
+  const pc=`<div><h4>Upside</h4><ul>${a.pros.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><h4 style="margin-top:14px">Watch out</h4><ul>${a.cons.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`;
+  const foot=`<div class="asset-foot"><span><strong>Taxes:</strong> ${esc(a.tax)}</span><button class="btn small" data-brief="${a.id}">${level==="new"?"Explain it simply":level==="expert"?"Expert AI view":"AI brief for my profile"}</button></div>`;
+  if(level==="new")return `<div><div class="plain"><h4>In plain English</h4><p>${esc(t.b||a.tag)}</p></div><h4 style="margin-top:14px">Right now</h4><p>${esc(a.now)}</p></div>${start}${pc}${foot}`;
+  const how=`<div><h4>How it works</h4><p>${esc(a.how)}</p><h4 style="margin-top:14px">Right now</h4><p>${esc(a.now)}</p></div>`;
+  const lens=level==="expert"&&t.m?`<div class="lens"><div><h4>Metrics to model</h4><p>${esc(t.m)}</p></div><div><h4>Strategy</h4><p>${esc(t.s)}</p></div><div><h4>Pitfall</h4><p>${esc(t.p)}</p></div></div>`:"";
+  return how+start+pc+lens+foot;
+}
+document.addEventListener("click",e=>{
+  const o=e.target.closest("[data-open]");
+  if(o){filter="all";buildFilters();renderLib();const d=$("#asset-"+o.dataset.open);d.open=true;d.scrollIntoView({behavior:"smooth",block:"start"});return}
+  const b=e.target.closest("[data-brief]");
+  if(b){const a=A.find(x=>x.id===b.dataset.brief);const f=ranked.find(m=>m.a.id===a.id).f;
+    const q=level==="new"?`Explain ${a.name} to me like I'm brand new to investing: what it is, how I'd get started, what could go wrong, and whether it fits me (my fit score is ${f}/100).`
+      :level==="expert"?`Give me an expert view on ${a.name} for my profile: the valuation or yield metrics that matter today, its role in portfolio construction (risk, correlation, sizing), tax angles and key risks. Fit score ${f}/100.`
+      :`Give me a brief on ${a.name} for my profile: how it works, what today's numbers mean, exact first steps, the main risks, and how well it fits me (my fit score is ${f}/100).`;
+    askAI(q,"");return}
+});
+
+/* ---------- Plan ---------- */
+const BUCKETS=[
+  {k:"cash",l:"Cash & T-bills",ex:"High-yield savings, T-bills",ret:4.1,vol:.5,c:"var(--r1)"},
+  {k:"bonds",l:"Bonds",ex:"Treasury notes, I bonds, bond funds",ret:4.7,vol:6,c:"var(--r2)"},
+  {k:"stocks",l:"Stock index funds",ex:"S&P 500 / total-market ETFs, target-date funds",ret:9.5,vol:16,c:"var(--r3)"},
+  {k:"re",l:"Real estate",ex:"REIT index funds",ret:8.5,vol:19,c:"var(--r4)"},
+  {k:"alt",l:"Alternatives",ex:"Gold ETF, small crypto position",ret:9,vol:35,c:"var(--r5)"},
+];
+function alloc(pr){
+  const s=pr.s;
+  let w={cash:40-35*s,bonds:35-25*s,stocks:20+55*s,re:5+5*s,alt:5*s};
+  if(P.int.includes("realestate")){w.re+=4;w.stocks-=4}
+  if(P.int.includes("tech")&&s>.4){w.alt+=2;w.stocks-=2}
+  if(+P.hor===0||P.goal==="safety"){w={cash:85,bonds:15,stocks:0,re:0,alt:0}}
+  else if(+P.hor===1||P.goal==="short"){w={cash:50,bonds:40,stocks:10,re:0,alt:0}}
+  const t=Object.values(w).reduce((a,b)=>a+b,0);
+  const out={};for(const k in w)out[k]=Math.round(w[k]/t*100);
+  const diff=100-Object.values(out).reduce((a,b)=>a+b,0);out.stocks+=diff;
+  return out;
+}
+let curAlloc={};
+function renderPlan(pr){
+  curAlloc=alloc(pr);
+  $("#alloc-label").textContent=riskLabel(pr.s)[0];
+  $("#alloc-bar").innerHTML=BUCKETS.map(b=>`<i style="width:${curAlloc[b.k]}%;background:${b.c}" title="${b.l} ${curAlloc[b.k]}%"></i>`).join("");
+  $("#alloc-table").innerHTML=BUCKETS.filter(b=>curAlloc[b.k]>0).map(b=>`<tr><td><span class="sw" style="background:${b.c}"></span>${b.l}<small>${b.ex} · exp. ${b.ret}%/yr</small></td><td>${curAlloc[b.k]}%</td></tr>`).join("");
+  $("#alloc-note").textContent=level==="new"?"Think of this as jobs for your money: cash for safety, bonds for steady income, and stock funds for long-term growth. "+(pr.amount<500?"With under $500, start with a high-yield savings account and one index fund, and add the rest as you contribute.":"Start with your savings account and one index fund, then add the rest as you learn.")
+    :level==="expert"?"Rebalance on ±5-point drift bands rather than the calendar. Fine-tune weights with the correlation-aware builder in the Expert desk."
+    :pr.amount<500?"With under $500, start with the high-yield savings slice and one index fund; add the rest as you contribute.":"Rebalance once a year back to these weights. Keep an emergency fund outside this plan.";
+  drawProj();
+}
+function portStats(){
+  let mu=0,v=0;for(const b of BUCKETS){const w=(curAlloc[b.k]||0)/100;mu+=w*b.ret;v+=w*b.vol}
+  return {mu,sig:v*.85};
+}
+function fv(start,monthly,years,r){let bal=start;const pts=[start];for(let m=1;m<=years*12;m++){bal=bal*(1+r/100/12)+monthly;if(m%12===0)pts.push(bal)}return pts}
+function niceStep(max){const raw=max/4;const p=Math.pow(10,Math.floor(Math.log10(raw)));const n=raw/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p}
+function drawProj(){
+  const start=Math.max(0,+$("#in-start").value||0),mon=Math.max(0,+$("#in-month").value||0),yrs=Math.min(50,Math.max(1,Math.round(+$("#in-years").value||1)));
+  const {mu,sig}=portStats();const band=1.28*sig/Math.sqrt(yrs);
+  const lo=fv(start,mon,yrs,mu-band),mid=fv(start,mon,yrs,mu),hi=fv(start,mon,yrs,mu+band),paid=fv(start,mon,yrs,0);
+  const W=640,H=280,L=62,R=78,T=16,B=34,pw=W-L-R,ph=H-T-B;
+  const step=niceStep(Math.max(...hi));const ymax=Math.ceil(Math.max(...hi)/step)*step||1;
+  const x=i=>L+pw*i/yrs,y=v=>T+ph*(1-v/ymax);
+  const line=a=>a.map((v,i)=>`${i?"L":"M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
+  let g="";
+  for(let v=0;v<=ymax+1e-6;v+=step)g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="JetBrains Mono,monospace">${money(v,1)}</text>`;
+  const xs=yrs<=10?1:yrs<=25?5:10;
+  for(let i=0;i<=yrs;i+=xs)g+=`<text x="${x(i)}" y="${H-12}" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="JetBrains Mono,monospace">${i===0?"Now":"Yr "+i}</text>`;
+  const area=line(hi)+hi.map((_,i)=>"").join("")+lo.slice().reverse().map((v,j)=>`L${x(yrs-j).toFixed(1)},${y(v).toFixed(1)}`).join("")+"Z";
+  const lab=(a,t,c)=>`<text x="${W-R+6}" y="${y(a[a.length-1])+4}" font-size="11" fill="${c}" font-family="JetBrains Mono,monospace">${t}</text>`;
+  // de-collide end labels
+  const ends=[[hi,"Strong","var(--good)"],[mid,"Expected","var(--ink)"],[lo,"Weak","var(--warn)"],[paid,"Deposits","var(--muted)"]];
+  let lastY=-99;const labs=ends.map(([a,t,c])=>{let yy=y(a[a.length-1])+4;if(yy-lastY<13)yy=lastY+13;lastY=yy;return `<text x="${W-R+6}" y="${yy}" font-size="11" fill="${c}" font-family="JetBrains Mono,monospace">${t}</text>`}).join("");
+  $("#proj").innerHTML=`${g}<path d="${area}" fill="var(--gold-soft)" opacity=".8"/>
+   <path d="${line(paid)}" fill="none" stroke="var(--muted)" stroke-dasharray="4 4" stroke-width="1.5"/>
+   <path d="${line(lo)}" fill="none" stroke="var(--warn)" stroke-width="1.5"/>
+   <path d="${line(hi)}" fill="none" stroke="var(--good)" stroke-width="1.5"/>
+   <path d="${line(mid)}" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+   <circle cx="${x(yrs)}" cy="${y(mid[mid.length-1])}" r="4" fill="var(--ink)"/>${labs}`;
+  $("#proj-sum").innerHTML=`<div><b style="color:var(--warn)">${money(lo[yrs],1)}</b><span>Weak case · ${(mu-band).toFixed(1)}%/yr</span></div><div><b>${money(mid[yrs],1)}</b><span>Expected · ${mu.toFixed(1)}%/yr</span></div><div><b style="color:var(--good)">${money(hi[yrs],1)}</b><span>Strong case · ${(mu+band).toFixed(1)}%/yr</span></div>`;
+  projCache={start,mon,yrs,mu,lo:lo[yrs],mid:mid[yrs],hi:hi[yrs],paid:paid[yrs]};
+  bindHover($("#proj").parentNode,{xs:mid.map((_,i)=>x(i)),top:T,bottom:T+ph,
+    pts:i=>[[hi,"var(--good)"],[mid,"var(--ink)"],[lo,"var(--warn)"],[paid,"var(--muted)"]].map(([a,c])=>({x:x(i),y:y(a[i]),c})),
+    row:i=>({title:i===0?"Today":`Year ${i} · ${2026+i}`,lines:[["var(--good)","Strong",money(hi[i])],["var(--ink)","Expected",money(mid[i])],["var(--warn)","Weak",money(lo[i])],["var(--muted)","You deposited",money(paid[i])]],note:i?`Expected growth on deposits: ${money(mid[i]-paid[i])}`:"Starting balance"})});
+  $("#proj")._redraw&&$("#proj")._redraw();
+}
+let projCache={};
+["#in-start","#in-month","#in-years"].forEach(s=>$(s).addEventListener("input",drawProj));
+
+/* ---------- Board, curve, market ---------- */
+function renderBoard(){
+  $("#board").innerHTML=BOARD.map(([l,v,n])=>`<tr><td>${esc(l)}<small>${esc(n)}</small></td><td>${esc(v)}</td></tr>`).join("");
+  const W=420,H=130,L=34,R=12,T=14,B=24,pw=W-L-R,ph=H-T-B,ymin=4.0,ymax=5.4;
+  const xp=i=>L+pw*i/(CURVE.length-1),yp=v=>T+ph*(1-(v-ymin)/(ymax-ymin));
+  let s="";for(const v of [4.0,4.5,5.0])s+=`<line x1="${L}" x2="${W-R}" y1="${yp(v)}" y2="${yp(v)}" stroke="var(--line)"/><text x="${L-6}" y="${yp(v)+4}" text-anchor="end" font-size="10" fill="var(--muted)" font-family="JetBrains Mono,monospace">${v.toFixed(1)}</text>`;
+  s+=`<path d="${CURVE.map((c,i)=>`${i?"L":"M"}${xp(i)},${yp(c[2])}`).join("")}" fill="none" stroke="var(--gold)" stroke-width="2.5"/>`;
+  CURVE.forEach((c,i)=>{s+=`<circle cx="${xp(i)}" cy="${yp(c[2])}" r="3.5" fill="var(--surface)" stroke="var(--gold)" stroke-width="2"/><text x="${xp(i)}" y="${H-6}" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="JetBrains Mono,monospace">${c[0]}</text><text x="${xp(i)}" y="${yp(c[2])-8}" text-anchor="middle" font-size="9.5" fill="var(--ink)" font-family="JetBrains Mono,monospace">${c[2].toFixed(2)}</text>`});
+  $("#curve").innerHTML=s;
+  bindHover($("#curve").parentNode,{xs:CURVE.map((_,i)=>xp(i)),top:T,bottom:T+ph,
+    pts:i=>[{x:xp(i),y:yp(CURVE[i][2]),c:"var(--gold)"}],
+    row:i=>{const c=CURVE[i],real=c[2]-CPI,prev=CURVE[i-1];return {title:`${c[0]} Treasury · Nov 2, 2026`,lines:[["var(--gold)","Yield",c[2].toFixed(2)+"%"],[real>=0?"var(--good)":"var(--bad)","After 3.7% inflation",(real>=0?"+":"")+real.toFixed(2)+"%"],["var(--muted)","$10K earns per year","$"+Math.round(c[2]*100).toLocaleString()]],note:prev?`+${(c[2]-prev[2]).toFixed(2)} pt vs ${prev[0]}`:"Shortest maturity shown"}}});
+  $("#briefs").innerHTML=BRIEFS.map(b=>`<article class="brief"><time>${b.d}, 2026</time><div><h3>${esc(b.t)}</h3><p>${esc(b.b)}</p><p class="so"><b>SO WHAT</b>${esc(b.so)}</p></div></article>`).join("");
+  const ins=[["Top high-yield savings",4.70],["1-year T-bill",4.18],["10-year Treasury",4.91],["National avg savings",0.38]];
+  $("#insights").innerHTML=ins.map(([l,r])=>{const rr=r-CPI;return `<div class="insight"><div class="eyebrow">${l} · ${r.toFixed(2)}%</div><div class="big" style="color:${rr>=0?"var(--good)":"var(--bad)"}">${rr>=0?"+":""}${rr.toFixed(2)}%</div><p>${rr>=0?"Beats inflation: your buying power grows.":"Loses to inflation: your buying power shrinks."}</p></div>`}).join("");
+  glossIn($("#board"));glossIn($("#briefs"));
+  $("#sources").innerHTML=SOURCES.map(([t,u])=>`<li><a href="${u}" target="_blank" rel="noopener">${esc(t)}</a></li>`).join("");
+}
+
+/* ---------- Update all ---------- */
+function update(){
+  const pr=profile();const [lab,desc]=riskLabel(pr.s);
+  $("#sample-flag").hidden=!isSample;
+  $("#r-label").textContent=lab;$("#r-desc").textContent=desc;
+  $("#r-pin").style.left=(pr.s*100)+"%";
+  $("#f-score").textContent=pr.score+" / 100";$("#f-hor").textContent=HOR_TXT[+P.hor];$("#f-amt").textContent=AMT_TXT[+P.amt];$("#f-liq").textContent=LIQ_TXT[pr.liq];
+  ranked=A.map(a=>({a,...fit(a,pr)})).sort((x,y)=>y.f-x.f);
+  renderMatches();renderLib();renderPlan(pr);renderSuggest();
+  $("#f-lvl").textContent=LEVELS[level].name;$("#f-top").textContent=ranked[0].a.name;
+  const first=ranked.find(m=>!COMPLEX.has(m.a.id))||ranked[0];
+  $("#basics-next").innerHTML=`<span>Based on your profile, a good first step is <strong>${esc(first.a.name)}</strong>: ${esc((LV_TXT[first.a.id]||{}).b||first.a.tag)}</span><button class="btn small" type="button" data-open="${first.a.id}">Read the guide</button>`;
+  glossIn($("#basics-next"));
+  renderDesk();
+  $("#chat-ctx").textContent=`Using: ${lab} · score ${pr.score} · ${HOR_TXT[+P.hor]}`;
+}
+
+/* ---------- Pro agent ---------- */
+/* Saved copy of the agent's briefings (Nov 4, 2026) for visitors without a Claude sign-in. */
+const SNAPSHOT={"watch": [{"id": "aapl", "kind": "stock", "name": "Apple (AAPL)", "createdAt": "2026-11-04T08:00:00Z", "source": "snapshot", "status": "ready"}, {"id": "btc", "kind": "crypto", "name": "Bitcoin", "createdAt": "2026-11-04T08:01:00Z", "source": "snapshot", "status": "ready"}, {"id": "iowa-farmland", "kind": "land", "name": "Iowa farmland", "createdAt": "2026-11-04T08:02:00Z", "source": "snapshot", "status": "ready"}, {"id": "rates", "kind": "rates", "name": "Treasury & savings rates", "createdAt": "2026-11-04T08:03:00Z", "source": "snapshot", "status": "ready"}, {"id": "i4hznsiyjuc3drrplcsq", "kind": "land", "name": "Palatine, IL", "createdAt": "2026-11-04T21:51:07Z", "source": "snapshot", "status": "ready"}, {"id": "lxf0avs3stecugcjniqx", "kind": "stock", "name": "IREN Limited (IREN)", "createdAt": "2026-11-04T22:23:07Z", "source": "snapshot", "status": "ready"}], "briefs": {"aapl": {"analytics": {"current": {"label": "Nov 3 close", "num": 331.9, "value": "$331.90"}, "method": "Projections apply Apple's own guidance to its reported December 2025 quarter ($143.8B). Scenarios use published analyst price targets. Not a forecast or recommendation.", "outlook": {"dir": "mixed", "label": "Mixed: fairly valued", "summary": "The business is projected to grow next quarter, but the average analyst price target ($327) sits about 1% below the Nov 3 close, so Wall Street sees limited upside from here. Profit margins are the swing factor."}, "projections": [{"label": "Dec-quarter revenue", "note": "Apple guided +7–10% on last year's $143.8B; midpoint ≈ $156B.", "value": "$154–158B"}, {"label": "Dec-quarter cost of sales", "note": "Midpoint revenue × (1 − 45.5% gross margin). Estimate.", "value": "≈ $85B"}, {"label": "Dec-quarter gross profit", "note": "Guided 45–46% gross margin applied to the revenue range.", "value": "$69–73B"}, {"label": "Earnings yield", "note": "1 ÷ 39.5 P/E, below the 10-year Treasury's 4.91%.", "value": "2.5%"}, {"label": "Annualized volatility", "note": "Calculated from 26 daily closes, Sep 29–Nov 3.", "value": "≈ 17%"}], "scenarios": [{"change": "−28%", "name": "Bear", "note": "Lowest analyst target: margins keep shrinking and investors pay a lower multiple.", "num": 240, "value": "$240"}, {"change": "−1%", "name": "Base", "note": "Average analyst target: growth roughly offsets margin pressure.", "num": 327.42, "value": "$327"}, {"change": "+22%", "name": "Bull", "note": "Highest analyst target: AI-driven iPhone upgrades and Services beat guidance.", "num": 405, "value": "$405"}], "signals": [{"label": "5-week price trend", "note": "$329.40 → $331.90; traded between $329 and $349.", "read": "neutral", "value": "+0.8%"}, {"label": "RSI (14-day)", "note": "Between 30 (oversold) and 70 (overbought).", "read": "neutral", "value": "58"}, {"label": "Williams %R", "note": "Short-term momentum stretched after the Nov 4 jump.", "read": "bearish", "value": "Overbought"}, {"label": "Valuation vs bonds", "note": "Earnings yield trails Treasuries; investors are paying up for growth.", "read": "bearish", "value": "2.5% vs 4.91%"}, {"label": "Analyst consensus", "note": "Implies ~1% downside; JPMorgan's target is $355.", "read": "neutral", "value": "$327 avg target"}, {"label": "Input costs", "note": "Management expects memory costs to keep climbing past December.", "read": "bearish", "value": "Memory prices rising"}]}, "asOf": "Nov 4, 2026", "facts": [["Market cap", "≈ $5.0T"], ["P/E (trailing)", "≈ 39.5×"], ["Dividend yield", "0.31%"], ["Avg analyst target", "$327 ($240–$405)"]], "headline": "Record September quarter, but chip costs are squeezing margins, and the stock swung from a 1.9% drop to a sharp rebound in two days.", "kind": "stock", "levels": {"expert": {"frameworks": ["Margin sensitivity: ±100 bp gross margin ≈ ±$1.56B quarterly gross profit", "Equity risk premium proxy: earnings yield − 10-year ≈ −2.4 pt", "Skew to analyst targets: −28% (low) / +22% (high) around a ~fair-value $327 mean", "Sizing: at ~17% realized vol, a 5% weight adds ≈ 0.85 pt of standalone portfolio vol"], "take": "At ≈39.5× trailing earnings, AAPL's 2.5% earnings yield sits about 240 bp below the 10-year (4.91%), an implied negative equity risk premium. The multiple is underwritten by Services durability and buybacks, not near-term EPS. Gross margin is the swing variable: on ~$156B of December-quarter revenue, each 100 bp of margin is ≈ $1.56B of gross profit, and the 45–46% guide sits below the ~46.3% Street expectation. The −1.9% / +5.5% two-day swing around the print points to crowded positioning on both sides."}, "new": {"explain": "Owning Apple stock means owning a tiny piece of the company. When Apple sells more iPhones and makes more profit, the stock usually rises; when costs go up, like memory chips right now, it can fall. The P/E of about 39.5 means investors pay about $39.50 for every $1 of Apple's yearly profit, which is on the expensive side.", "steps": ["Open a brokerage account that offers fractional shares, so you can start with a few dollars", "Decide how much you'd be OK seeing drop 30%; for one company, keep it a small slice", "Or own Apple indirectly through an S&P 500 index fund, where it's one of about 500 companies", "Check in at each quarterly earnings report, not every day"]}}, "meaning": "Apple's business is still growing: record revenue and 17% iPhone growth. The worry is profit per sale, because memory chips are getting much more expensive. At about 39 times earnings, investors already expect a lot, so even slightly soft guidance moved the stock several percent in a day. If Apple is one of your holdings, keep it a small slice (around 5% or less) and judge it on the next few quarters of margins, not one day's move.", "metric": {"change": "−1.9% on the day", "dir": "down", "label": "Nov 3 close", "sub": "Opened up about 5.5% on Nov 4. 52-week range $243.42–$351.73.", "value": "$331.90"}, "risks": ["High valuation: little room for disappointment", "Rising memory costs squeezing margins", "A new CEO still proving himself", "Single-stock risk: one company can fall far more than an index fund"], "sections": [{"items": [{"date": "Nov 2", "source": "MacRumors", "text": "Fiscal Q4 results: revenue $114.5B and profit $30.7B. iPhone $57.6B (+17%), a September-quarter record; Services hit an all-time high of $31.6B.", "url": "https://www.macrumors.com/2026/11/02/apple-q4-2026-earnings-takeaways/"}, {"date": "Nov 3", "source": "HeyGoTrade", "text": "Shares fell 1.9% to $331.90. December-quarter gross margin guidance of 45–46% was below the roughly 46.3% analysts expected.", "url": "https://www.heygotrade.com/en/news/apple-aapl-stock-news-november-4-2026/"}, {"date": "Nov 4", "source": "TradingKey", "text": "Opened up about 5.5%. The annual report showed larger memory purchase commitments, which investors read as protection against further chip price spikes.", "url": "https://www.tradingkey.com/news/market-movers/262274568-market-movers-aapl-20261104"}, {"date": "Oct 28", "source": "StockAnalysis", "text": "Launched its first touchscreen MacBook Pro, with M5 chips.", "url": "https://stockanalysis.com/stocks/aapl/"}], "title": "News"}, {"items": [{"date": "Sep 1", "source": "MacRumors", "text": "John Ternus took over as CEO from Tim Cook. Nov 2 was his first earnings call, alongside CFO Kevan Parekh and COO Sabih Khan.", "url": "https://www.macrumors.com/2026/11/02/apple-q4-2026-earnings-takeaways/"}, {"date": "Nov 2", "source": "MacRumors", "text": "Ternus called the memory cost situation unprecedented and expects memory prices to keep rising beyond December.", "url": "https://www.macrumors.com/2026/11/02/apple-q4-2026-earnings-takeaways/"}, {"date": "Nov 2", "source": "MacRumors", "text": "December-quarter outlook: revenue +7–10% (would be Apple's biggest quarter ever), Services +8–9%, gross margin 45–46%, with Mac and iPad supply still tight.", "url": "https://www.macrumors.com/2026/11/02/apple-q4-2026-earnings-takeaways/"}], "title": "Management & guidance"}], "series": {"label": "Daily close, Sep 29 – Nov 3, 2026", "points": [["Sep 29", 329.4], ["Sep 30", 333.02], ["Oct 1", 330.32], ["Oct 2", 333.69], ["Oct 5", 332.89], ["Oct 6", 333.63], ["Oct 7", 336.67], ["Oct 8", 340.42], ["Oct 9", 336.64], ["Oct 12", 340.97], ["Oct 13", 341.27], ["Oct 14", 342.96], ["Oct 15", 342], ["Oct 16", 343.46], ["Oct 19", 342.94], ["Oct 20", 339.5], ["Oct 21", 343.99], ["Oct 22", 348.22], ["Oct 23", 347.73], ["Oct 26", 343.91], ["Oct 27", 347.1], ["Oct 28", 343.83], ["Oct 29", 348.91], ["Oct 30", 344.63], ["Nov 2", 338.32], ["Nov 3", 331.9]], "unit": "$"}, "title": "Apple (AAPL)", "watch": ["December-quarter results (late January): did margins land in the 45–46% range?", "Memory chip prices, a key input cost", "Greater China sales, which beat records but missed some estimates", "Siri AI rollout and its effect on costs"]}, "btc": {"analytics": {"current": {"label": "Nov 4", "num": 78000, "value": "≈ $78,000"}, "method": "Ranges assume 60% annualized volatility, bitcoin's typical level. They are statistical ranges, not predictions.", "outlook": {"dir": "down", "label": "Bearish short-term", "summary": "Money is leaving bitcoin funds and the price sits below where October started. Statistically, an asset with ~60% annual volatility has about a two-in-three chance of ending the next month between ~$64.5K and ~$91.5K."}, "projections": [{"label": "Revenue / cost", "note": "Bitcoin has no earnings or expenses; price is set purely by supply and demand.", "value": "Not applicable"}, {"label": "3-month range (68% odds)", "note": "±30% = 60% annual volatility × √0.25.", "value": "$54.6K–$101.4K"}, {"label": "October ETF flows", "note": "About −0.5% of $99.16B in fund assets; first outflow month since June.", "value": "−$515M"}, {"label": "Drop from October high", "note": "$87,249 (Oct 2) → ≈ $78,000.", "value": "−10.6%"}, {"label": "Change since Oct 1", "note": "$83,556 → ≈ $78,000.", "value": "−6.6%"}], "scenarios": [{"change": "−17%", "name": "Bear", "note": "1-month −1σ: outflows continue and the Fed hikes.", "num": 64490, "value": "$64.5K"}, {"change": "0%", "name": "Base", "note": "Holds the $76–80K range while fund flows stabilize.", "num": 78000, "value": "$78K"}, {"change": "+17%", "name": "Bull", "note": "1-month +1σ: ETF buying returns and price reclaims October's highs.", "num": 91510, "value": "$91.5K"}], "signals": [{"label": "ETF flows", "note": "−$643M, −$399M, −$116M; selling is slowing.", "read": "bearish", "value": "3 straight outflow days"}, {"label": "Corporate buying", "note": "Treasury companies kept buying as funds sold.", "read": "bullish", "value": "Strategy +811 BTC"}, {"label": "Support level", "note": "Holding above it so far.", "read": "neutral", "value": "$76K (Oct 30 low)"}, {"label": "Fed outlook", "note": "Higher rates make non-yielding assets less attractive.", "read": "bearish", "value": "78% odds of Dec hike"}, {"label": "Exchange risk", "note": "Security events tend to trigger selling.", "read": "bearish", "value": "Binance incident (~$6.3B)"}]}, "asOf": "Nov 4, 2026", "facts": [["Spot ETF assets", "$99.16B"], ["October ETF flows", "−$515M"], ["Fri–Tue outflows", "≈ −$1.16B"], ["October low", "$76,141 (Oct 30)"]], "headline": "Bitcoin is steadying near $78K after its worst stretch since summer: spot ETF investors pulled about $1.16B over three sessions following a major exchange hack.", "kind": "crypto", "levels": {"expert": {"frameworks": ["Flows vs price: divergence between ETF creations and spot is the tell", "Real rates: higher real yields have historically pressured BTC", "Risk parity: at 60% vol vs ~16% for equities, a BTC weight ≈ 0.27× an equity weight for equal risk", "Levels: $76.1K support (Oct 30 low), $87.2K resistance (Oct high)"], "take": "A flow-driven tape: spot ETF assets of $99.16B saw −$515M net in October (−0.5%), but IBIT took in $931.8M while the rest of the complex bled $1.45B, which reads as rotation rather than capitulation. The three-day −$1.16B outflow coincided with the Binance incident, yet price held October's $76.1K low. With ~78% odds of a December hike priced, rising real yields are a headwind for a zero-yield asset."}, "new": {"explain": "Bitcoin is digital money with a fixed supply of 21 million coins. No company stands behind it and it pays no interest, so its price moves only on how much people want it. That's why it can swing 10% in a week, like it did in October.", "steps": ["Only invest money you could lose without changing your plans", "The simplest route is a bitcoin ETF bought in a regular brokerage account", "Buy small amounts on a schedule instead of all at once", "If you use a crypto exchange, turn on two-factor login"]}}, "meaning": "Bitcoin can swing 10–15% within a month even when nothing changes about your plans, and October did exactly that. The ETF outflows show big investors trimming risk, not a collapse. If you hold crypto, size it so a 50% drop would be painful but not plan-changing (many guides suggest 1–5% of a portfolio), and buy in small regular amounts rather than chasing headlines.", "metric": {"change": "−7.3% in October", "dir": "down", "label": "Price, Nov 4 morning", "sub": "October range $76,141 – $87,249", "value": "≈ $78,000"}, "risks": ["50–80% drawdowns have happened repeatedly", "Exchange hacks and custody risk", "No cash flows to anchor value", "Sensitive to rate hikes and risk-off moods"], "sections": [{"items": [{"date": "Oct 30", "source": "SimpleMining", "text": "Binance reported a security incident with an estimated impact of about $6.3B. That day was October's price low and its biggest ETF outflow day.", "url": "https://www.simplemining.io/insights/post/bitcoin-market-report-october-2026"}, {"date": "Nov 2", "source": "Bitcoin.com", "text": "US spot bitcoin ETFs saw $398.6M of outflows, led by BlackRock's IBIT.", "url": "https://news.bitcoin.com/bitcoin-etf/bitcoin-price-holds-78k-as-etf-outflows-slow-to-116m/"}, {"date": "Nov 3", "source": "Bitcoin.com", "text": "Outflows slowed to $115.6M, the third straight negative day; Bitwise, Fidelity and Morgan Stanley funds took in money.", "url": "https://news.bitcoin.com/bitcoin-etf/bitcoin-price-holds-78k-as-etf-outflows-slow-to-116m/"}], "title": "News"}, {"items": [{"date": "Oct", "source": "SimpleMining", "text": "October was the first month of net ETF outflows since June (−$515M). BlackRock's IBIT took in $931.8M while other funds lost a combined $1.45B.", "url": "https://www.simplemining.io/insights/post/bitcoin-market-report-october-2026"}, {"date": "Nov 4", "source": "24/7 Wall St.", "text": "Corporate buyer Strategy added 811 coins while ETF investors sold.", "url": "https://247wallst.com/investing/2026/11/04/michael-saylor-keeps-buying-bitcoin-while-etf-investors-sell-strategy-added-811-coins-while-blackrocks-bitcoin-etf-saw-405-3-million-pulled-out-in-a-single-day"}, {"date": "Oct 28", "source": "StockAnalysis", "text": "The Fed held rates at 3.75–4.00%, with markets pricing a possible December hike. Higher rates tend to weigh on speculative assets.", "url": "https://stockanalysis.com/news/fed-holds-rates-steady-oct-2026/"}], "title": "Who's moving the market"}], "series": {"label": "Weekly closes, October 2026", "points": [["Oct 1 open", 83556], ["Oct 7", 83275], ["Oct 14", 81566], ["Oct 21", 84025], ["Oct 31", 77424], ["Nov 4", 78000]], "unit": "$"}, "title": "Bitcoin (BTC)", "watch": ["Whether ETF flows turn positive again", "Holding above October's $76K low", "December Fed decision", "Fallout from the Binance incident"]}, "iowa-farmland": {"analytics": {"current": {"label": "Nov 2025 average", "num": 11549, "value": "$11,549/acre"}, "method": "Growth rates are compound annual rates from ISU survey values. Scenarios reuse recent annual changes. Not a forecast.", "outlook": {"dir": "flat", "label": "Flat to slightly up", "summary": "Surveys show values inching up 0.7–1.9% a year while cash rents slipped to $270/acre. With rent yields near 2.3%, farmland's return depends on slow appreciation; data-center sites are the exception."}, "projections": [{"label": "Rental income per acre", "note": "2026 ISU average cash rent, down $1 from 2025.", "value": "$270/yr"}, {"label": "Gross rent yield", "note": "$270 ÷ $11,549, vs 4.91% on a 10-year Treasury.", "value": "2.3%"}, {"label": "Example: 80 acres", "note": "Cost and annual rent at statewide averages, before property tax and fees.", "value": "$924K · $21.6K/yr"}, {"label": "10-year growth rate", "note": "2015 $7,633 → 2025 $11,549.", "value": "4.2%/yr"}, {"label": "5-year growth rate", "note": "Boosted by 2021–22; the last two years averaged −1.2%/yr.", "value": "8.8%/yr"}, {"label": "Data-center premium", "note": "Microsoft's ~$155K/acre vs the $11,549 average.", "value": "≈ 13×"}], "scenarios": [{"change": "−3.1%", "name": "Bear", "note": "Repeat of 2024: low crop prices and high rates.", "num": 11191, "value": "$11,190"}, {"change": "+1%", "name": "Base", "note": "Recent survey pace (+0.7% to +1.9%).", "num": 11664, "value": "$11,660"}, {"change": "+3.7%", "name": "Bull", "note": "Repeat of 2023: strong yields, tight supply.", "num": 11976, "value": "$11,975"}], "signals": [{"label": "Crop prices", "note": "Top negative factor, cited by 32% of surveyed experts.", "read": "bearish", "value": "Low"}, {"label": "Interest rates", "note": "Second-biggest negative (22%); land loans cost more.", "read": "bearish", "value": "10-yr ≈ 4.9%"}, {"label": "Land supply", "note": "Top positive factor (21%).", "read": "bullish", "value": "Tight"}, {"label": "Cash rents", "note": "Stable income, slightly lower.", "read": "neutral", "value": "$270 (−0.4%)"}, {"label": "Data-center demand", "note": "Big premiums, but only near power and highways.", "read": "bullish", "value": "Rising"}, {"label": "Farm support", "note": "Eases farm cash flow this season.", "read": "bullish", "value": "USDA $8B diesel aid"}]}, "asOf": "Nov 4, 2026", "facts": [["High-quality land", "$14,030/acre"], ["Medium quality", "$10,809/acre"], ["Low quality", "$7,580/acre"], ["Top county", "O'Brien, $16,269"]], "headline": "Statewide values have been flat since the 2021–22 boom, but data centers are paying many times farm value for land with power and road access.", "kind": "land", "levels": {"expert": {"frameworks": ["$/CSR2 point: Black Hawk $163 (89), Cerro Gordo $170 (81), Fremont $172 (76)", "Yield spread: cash-rent yield − 10-year ≈ −2.6 pt", "Optionality: proximity to substations and interstates for data-center or solar demand", "Structure: cash rent vs crop share, and 1031-exchange eligibility on exit"], "take": "Farmland trades at a ~2.3% gross cash yield ($270 ÷ $11,549), about 260 bp below the 10-year, so the case rests on appreciation and inflation-hedging rather than income. Values have compounded −1.2%/yr since 2023 as land repriced to higher rates. Soil quality is priced unevenly: recent sales ran $163–172 per CSR2 point, with lower-rated ground costing more per point. Data-center land at ~13× ag value means parcels near transmission and highways carry a real option."}, "new": {"explain": "Buying farmland means owning acres that a farmer rents from you each year. You earn the rent, about $270 per acre in Iowa, plus any rise in the land's value. It's slow and steady, but it takes tens of thousands of dollars to buy acres directly and can take months to sell.", "steps": ["Learn the basics first: soil quality (CSR2), cash rent and property tax", "Many first-time investors start with a farmland REIT or crowdfunding platform for a few hundred dollars", "Buying acres directly usually means paying cash, since land loans are hard to get", "Plan to hold for 10 years or more"]}}, "meaning": "Iowa farmland jumped 29% in 2021 and 17% in 2022, then went sideways as interest rates rose and crop prices fell. That makes it a slow, steady store of value today, not a fast grower. The big exception is location: parcels near power lines and highways can sell for 10× farm value to data center developers. For a beginner, land here means buying with cash, holding 10+ years, and earning returns mainly from rent paid by a farmer (cash rent) plus slow appreciation.", "metric": {"change": "+0.7% year over year", "dir": "up", "label": "Statewide average, Nov 2025 (ISU survey)", "sub": "Spring 2026 Realtors survey: +1.3% in six months", "value": "$11,549/acre"}, "risks": ["Illiquid: sales can take months", "Farmland rent yields are low relative to price", "Lower crop prices (cited by 32% of surveyed experts as the top negative)", "Higher interest rates (cited by 22%)"], "sections": [{"items": [{"date": "Nov 3", "source": "US Data Center Projects", "text": "Microsoft paid $95.5M for 616 acres in Dallas County near Woodward (about $155,000/acre) for a future data center campus. The intermediary had bought it for roughly $50,000/acre the same day.", "url": "https://usdatacenterprojects.com/iowa/microsoft-pays-usd-95-5-million-for-616-acres-for-future-data-center-campus-in-iowa"}, {"date": "Oct 29", "source": "Corn Belt Newsletter", "text": "Fall Realtors Land Institute survey: statewide +1.9% year over year. East Central Iowa led (+2.5%); North Central was the only region down (−1.3%).", "url": "https://jmanske.substack.com/p/realtors-land-institute-survey-shows"}, {"date": "Oct 29", "source": "Corn Belt Newsletter", "text": "USDA announced an $8B Harvest Fuel Relief program to help farmers with near-record diesel costs.", "url": "https://jmanske.substack.com/p/realtors-land-institute-survey-shows"}], "title": "Local developments"}, {"items": [{"date": "Sep", "source": "Corn Belt Newsletter", "text": "Black Hawk County: 109 acres, CSR2 soil score 89, $14,550/acre.", "url": "https://jmanske.substack.com/p/realtors-land-institute-survey-shows"}, {"date": "Sep", "source": "Corn Belt Newsletter", "text": "Cerro Gordo County: 120 acres, CSR2 81, $13,750/acre.", "url": "https://jmanske.substack.com/p/realtors-land-institute-survey-shows"}, {"date": "Sep", "source": "Corn Belt Newsletter", "text": "Fremont County: 79 acres, CSR2 76, $13,100/acre. Tip: CSR2 rates soil productivity from 5 to 100; higher scores sell for more.", "url": "https://jmanske.substack.com/p/realtors-land-institute-survey-shows"}], "title": "Recent sales"}], "series": {"label": "Average Iowa farmland value per acre, 2015–2025", "points": [["2015", 7633], ["2016", 7183], ["2017", 7326], ["2018", 7264], ["2019", 7432], ["2020", 7559], ["2021", 9751], ["2022", 11411], ["2023", 11835], ["2024", 11467], ["2025", 11549]], "unit": "$"}, "title": "Iowa Farmland", "watch": ["Iowa State's 2026 land value survey, due in December", "Corn and soybean prices, the top factor buyers cite", "Interest rates on land loans (10-year Treasury near 4.9%)", "New data center or solar announcements near target counties"]}, "lxf0avs3stecugcjniqx": {"analytics": {"current": {"label": "Nov 2 close", "num": 22.16, "value": "$22.16"}, "method": "Statistical low assumes ~100% annualized volatility over 3 months. Other scenarios are published analyst targets. Interest cost is an illustration, not company guidance.", "outlook": {"dir": "mixed", "label": "Analysts bullish, price bearish", "summary": "Analysts' targets sit 190–250% above today's price because of IREN's contracts, but the stock has fallen 45% in a month on funding costs and regulation. Tomorrow's earnings and any new financing will decide the next move; expect large swings either way."}, "projections": [{"label": "Q1 FY27 revenue (consensus)", "note": "vs $240.3M a year ago; reported Nov 5.", "value": "$229.8M"}, {"label": "Q1 EPS (consensus)", "note": "A loss, driven by depreciation and interest during the build-out.", "value": "−$0.73"}, {"label": "Quarterly revenue if Dec target hit", "note": "$4B ARR ÷ 4, vs ~$0.23B expected this quarter.", "value": "≈ $1B"}, {"label": "Build-out cost (FY27 capex)", "note": "2.6–3.1× the company's ≈ $9.7B market value.", "value": "$25–30B"}, {"label": "Illustrative interest cost", "note": "If $20B of capex is debt-funded at IREN's 6–9% loan rates. Estimate.", "value": "$1.2–1.8B/yr"}, {"label": "Gross margin", "note": "Thin today; should rise as GPU contracts start billing.", "value": "9.8%"}, {"label": "Price / contracted ARR", "note": "$9.7B market value ÷ $4B ARR.", "value": "2.4×"}], "scenarios": [{"change": "−50%", "name": "Stat. low", "note": "3-month −1σ at ~100% volatility: earnings miss, dilution or a Texas permit freeze.", "num": 11.08, "value": "$11"}, {"change": "+189%", "name": "B. Riley", "note": "Lowest named Buy target after Nov 4 cut.", "num": 64, "value": "$64"}, {"change": "+251%", "name": "Avg target", "note": "Average of 10 analysts (8 Buy, 2 Hold).", "num": 77.78, "value": "$77.78"}], "signals": [{"label": "Momentum", "note": "Down ~37% year to date; near 52-week low.", "read": "bearish", "value": "−45% in a month"}, {"label": "Analyst consensus", "note": "8 Buy, 2 Hold; avg target $77.78.", "read": "bullish", "value": "Strong Buy"}, {"label": "Contract backlog", "note": "Microsoft, NVIDIA and AI labs signed.", "read": "bullish", "value": "> $4B ARR"}, {"label": "Regulation", "note": "Sweetwater is IREN's biggest growth site.", "read": "bearish", "value": "Texas permit risk"}, {"label": "Leverage", "note": "More borrowing needed to fund capex.", "read": "bearish", "value": "Debt/equity ≈ 187%"}, {"label": "Relative valuation", "note": "Applied Digital trades at 6.3×.", "read": "bearish", "value": "13.7× sales"}]}, "asOf": "Nov 4, 2026", "facts": [["Market cap", "≈ $9.7B"], ["Contracted AI ARR", "> $4B"], ["FY27 capex plan", "$25–30B"], ["Avg analyst target", "$77.78 (8 Buy, 2 Hold)"]], "headline": "A bitcoin miner turned AI cloud provider with over $4B of contracted AI revenue, but the stock sits near 52-week lows on financing worries and new data-center regulation risk, one day before earnings.", "kind": "stock", "levels": {"expert": {"frameworks": ["Financing spread: return on GPU capex minus 6–9% debt cost drives equity value", "Dilution: model share-count growth alongside capex funding", "Event risk: size ahead of binary catalysts (earnings, Texas permitting)", "Sizing: at ~100% vol, a 1% weight ≈ 1 pt of standalone portfolio vol"], "take": "IREN's equity is a levered, long-duration claim on build-out execution. More than $4B of contracted ARR against a ≈$9.7B market cap (≈2.4× price-to-ARR) looks cheap only if the $25–30B FY27 capex is financed below the return on deployed GPUs; at 6–9% debt costs, every $10B borrowed adds roughly $0.6–0.9B of annual interest. Customer concentration (Microsoft's ~$9.7B contract) and Sweetwater permitting move the equity most, and at 13.7× sales vs Applied Digital's 6.3× the market already pays a premium for owned power."}, "new": {"explain": "IREN builds giant data centers full of powerful computer chips and rents them to AI companies like Microsoft. It's spending far more than it earns right now, betting that future rent will pay off. That makes it a high-risk, high-reward stock that can move 10% in a single day.", "steps": ["Treat it as a speculative stock: only a small slice of your money", "Learn the three numbers that matter here: contracted revenue, spending (capex) and debt", "Avoid buying right before earnings if big swings would upset you", "Consider getting AI exposure more gently through a broad index fund"]}}, "meaning": "IREN's growth case is real on paper: it has signed more than $4B a year of AI cloud contracts (Microsoft, NVIDIA, Perplexity and others) against a roughly $9.7B market value. The catch is how much it must build to deliver: $25–30B of spending this fiscal year, about 3x the whole company's value, funded with debt and new shares. On capacity it is a smaller, earlier-stage player than CoreWeave or Nebius, but it owns its land and power, which can make each megawatt cheaper. For a balanced investor this is a speculative position. Keep it to a small slice, expect 10%+ daily swings, and consider waiting for tomorrow's earnings before acting.", "metric": {"change": "−7.5% · fell ~7% more Nov 4 morning", "dir": "down", "label": "Nov 2 close", "sub": "52-week range $22.01–$76.87. Q1 FY27 earnings Nov 5 after the close.", "value": "$22.16"}, "risks": ["Dilution and debt: capex is about 3× the company's market value", "Execution: buildings, GPUs and power must arrive on schedule", "Customer concentration, with Microsoft the largest contract", "Industry shakeout: Gartner predicts over 80% of neoclouds won't stay independent by 2030"], "sections": [{"items": [{"date": "IREN", "source": "Top1Markets / Motley Fool", "text": "Targets 480 MW of AI cloud capacity in 2026 and 1.2 GW in 2027, with over 2,100 MW under construction. Its Sweetwater, Texas campus (1.4 GW substation energized May 1, plus 600 MW due late 2027) is about 2 GW. A roughly 300 MW Spain campus is targeted for 2028.", "url": "https://www.top1markets.com/news/iren-stock-ai-cloud-arr-capex-neocloud-selloff"}, {"date": "CoreWeave", "source": "Nasdaq", "text": "Largest neocloud: over 850 MW active across 43 data centers at end of 2025, more than 3.1 GW contracted, a $66.8B backlog and $12–13B 2026 revenue guidance. It leases most sites rather than owning them.", "url": "https://www.nasdaq.com/articles/coreweaves-668b-backlog-boosts-long-term-growth-outlook"}, {"date": "Nebius", "source": "GuruFocus via Yahoo Finance", "text": "$3B AI cloud run-rate in June, targeting $7–9B by year-end, 5 GW of contracted power by end of 2026, and $20–25B of 2026 capex.", "url": "https://finance.yahoo.com/technology/ai/articles/nebius-group-nv-nbis-q2-010716755.html"}, {"date": "APLD", "source": "Motley Fool", "text": "Applied Digital reports about $36B of contracted revenue at a $5.4B market cap (6.3× sales vs. IREN's 13.7×), with lower reported capacity disclosure.", "url": "https://www.fool.com/coverage/better-buy/2026/11/02/applied-digital-vs-iren-which-technology-stock-is-a-better-buy-for-2027/"}], "title": "Capacity vs. other neoclouds"}, {"items": [{"date": "Nov 4", "source": "Investing.com", "text": "Shares fell about 7% in morning trading. Midterm results raised fears of new data-center rules, including a Texas governor-elect who campaigned on pausing new data-center permits, a risk to Sweetwater. CoreWeave and Nebius also fell.", "url": "https://www.investing.com/news/stock-market-news/why-is-iren-stock-sliding-today-93CH-5000062"}, {"date": "Nov 4", "source": "Investing.com", "text": "B. Riley cut its price target from $91 to $64 but kept a Buy rating. The stock had already lost about 45% over the past month.", "url": "https://www.investing.com/news/stock-market-news/why-is-iren-stock-sliding-today-93CH-5000062"}, {"date": "Nov 5", "source": "TipRanks", "text": "Q1 FY27 earnings after the close. Analysts expect revenue of about $230M and a loss of $0.73 per share.", "url": "https://www.tipranks.com/news/iren-reports-q1-2027-earnings-on-nov-5-heres-what-analysts-expect"}], "title": "News"}, {"items": [{"date": "Nov '25", "source": "Top1Markets", "text": "Microsoft: about $9.7B of dedicated GPU services over roughly five years. Microsoft accepted the first Childress deployment in August, lifting operating run-rate to about $1B.", "url": "https://www.top1markets.com/news/iren-stock-ai-cloud-arr-capex-neocloud-selloff"}, {"date": "May '26", "source": "Top1Markets", "text": "NVIDIA: about $3.4B five-year cloud services contract.", "url": "https://www.top1markets.com/news/iren-stock-ai-cloud-arr-capex-neocloud-selloff"}, {"date": "Jul–Aug", "source": "Top1Markets", "text": "About $2.8B more from AI developers including Prometheus, Perplexity, Together AI and a frontier AI lab.", "url": "https://www.top1markets.com/news/iren-stock-ai-cloud-arr-capex-neocloud-selloff"}], "title": "Contracts & customers"}, {"items": [{"date": "FY26", "source": "Top1Markets", "text": "Revenue $707M: $578M from bitcoin mining and $129M from AI cloud, though AI cloud overtook mining in the June quarter. Net loss $703M, mostly $639M of non-cash write-downs from converting mining sites.", "url": "https://www.top1markets.com/news/iren-stock-ai-cloud-arr-capex-neocloud-selloff"}, {"date": "FY26", "source": "Top1Markets", "text": "Raised about $16.2B through convertible notes, GPU loans, customer prepayments and stock. About $5.9B cash; debt-to-equity near 187%. Loans range from ~6% (Microsoft-backed) to 9%.", "url": "https://www.top1markets.com/news/iren-stock-ai-cloud-arr-capex-neocloud-selloff"}, {"date": "Note", "source": "Top1Markets", "text": "IREN itself cautions that ARR is an operating metric and recognized revenue may be materially lower.", "url": "https://www.top1markets.com/news/iren-stock-ai-cloud-arr-capex-neocloud-selloff"}], "title": "Financials & funding"}], "series": {"label": "AI cloud annualized revenue run-rate ($ billions): actual vs. company target", "points": [["Jun 2026", 0.5], ["Aug 2026", 1], ["Dec 2026 target", 4]], "unit": ""}, "title": "IREN Limited (IREN)", "watch": ["Nov 5 earnings: is IREN on track for $4B+ operating run-rate by December?", "Who signs as Sweetwater's first tenant, and at what price", "New debt or share sales, and their interest rates", "Texas data-center permitting policy after the election"]}, "i4hznsiyjuc3drrplcsq": {"analytics": {"current": {"label": "Q3 2026 median", "num": 386000, "value": "$386,000"}, "method": "Rental model uses stated assumptions; insurance and maintenance are estimates. Effective tax rate from Census ACS 2019–23 data. Scenarios are illustrations, not forecasts.", "outlook": {"dir": "up", "label": "Up, slowing on affordability", "summary": "Prices have compounded about 7.2% a year since Q3 2022 and rents rose 10.9% last year. But with mortgages at 7.24%, a financed single-family rental at the median price likely loses money each month; cheaper townhomes pencil out much better."}, "projections": [{"label": "Purchase (median home)", "note": "20% down = $77,200; loan $308,800.", "value": "$386,000"}, {"label": "Mortgage payment", "note": "30-year fixed at 7.24% (Freddie Mac, Oct 29); principal + interest.", "value": "$2,104/mo"}, {"label": "Rental revenue", "note": "2-bed rent $2,302 × 12, minus 5% vacancy.", "value": "$26,243/yr"}, {"label": "Operating costs", "note": "Property tax $8,646 (2.24%), insurance ≈ $1,800 (est.), maintenance $3,860 (1%).", "value": "$14,306/yr"}, {"label": "Net operating income", "note": "Cap rate 3.1% before financing.", "value": "$11,936/yr"}, {"label": "Cash flow after mortgage", "note": "Negative; offset by ≈ $3,000 of loan paydown in year 1 plus any appreciation.", "value": "≈ −$13,300/yr"}, {"label": "Townhome alternative", "note": "$250K townhome at the same rent, before HOA dues.", "value": "≈ 6.7% cap rate"}], "scenarios": [{"change": "0%", "name": "Bear", "note": "Prices stall: rates stay above 7% and listings pile up.", "num": 386000, "value": "$386K"}, {"change": "+5%", "name": "Base", "note": "Slower than the recent 7–9% pace.", "num": 405300, "value": "$405K"}, {"change": "+8.7%", "name": "Bull", "note": "Repeat of the last 12 months.", "num": 419582, "value": "$420K"}], "signals": [{"label": "Price momentum", "note": "Q3 2026 vs Q3 2025.", "read": "bullish", "value": "+8.7% y/y"}, {"label": "Rent growth", "note": "$1,845 → $2,046 average.", "read": "bullish", "value": "+10.9% y/y"}, {"label": "Competition", "note": "Strong demand; harder for buyers.", "read": "bullish", "value": "55.5% sell over list"}, {"label": "Mortgage rates", "note": "Makes financed rentals hard to cash-flow.", "read": "bearish", "value": "7.24%"}, {"label": "Property taxes", "note": "Suburban Cook County bills keep rising.", "read": "bearish", "value": "2.24% effective"}, {"label": "Bears stadium", "note": "Arlington Park would be upside; Indiana would not.", "read": "neutral", "value": "Undecided"}]}, "asOf": "Nov 4, 2026", "facts": [["Avg rent (all units)", "$2,046 (+10.9%)"], ["2-bedroom rent", "$2,302"], ["Gross rent yield*", "≈ 6–7%"], ["Redfin Compete Score", "77 / 100"]], "headline": "A competitive suburban market: prices up about 9% and rents up about 11% in a year, with infill townhomes and a downtown brewery approved and the Bears' Arlington Park decision still pending next door.", "kind": "land", "levels": {"expert": {"frameworks": ["Break-even financing: about 62% down makes debt service equal NOI at 7.24%", "Townhome at $250K: ~6.7% cap rate, still just under the mortgage rate", "Price-to-rent ≈ 14× ($386K ÷ $27.6K of annual 2-bed rent)", "Owner-occupied 2–4 units (house hacking) change both the down payment and the DSCR math"], "take": "Negative leverage: a 3.1% unlevered cap rate against a 7.24% mortgage means every borrowed dollar lowers returns. DSCR is ≈0.47 (NOI $11,936 ÷ debt service $25,254), far below the ~1.2× minimum lenders typically require, and levered cash-on-cash is ≈ −15% on ~$89K of equity (20% down plus 3% closing). The trade is an appreciation bet: prices have compounded ~7.2%/yr since Q3 2022 and rents rose 10.9% last year."}, "new": {"explain": "Investing in a Palatine home means buying a house, condo or townhome and renting it out. Rent pays your costs, and you hope the home's value rises over time. Right now, with mortgages above 7%, rent on a typical house doesn't cover the monthly costs, so cheaper townhomes and condos work better for a first property.", "steps": ["Get pre-approved to learn what you can borrow at today's ~7.24% rates", "Compare rent with the full monthly cost: mortgage, property tax, insurance and repairs", "Look at condos and townhomes near the Metra, where the numbers work better", "Consider living in one unit of a 2-flat and renting the other (house hacking)"]}}, "meaning": "Palatine looks like a steady, high-demand rental market rather than a bargain. A typical 2-bedroom rents for about $2,302 a month, or $27,600 a year, which is roughly a 7% gross yield on a $386K median home (*before costs). After Cook County property taxes, insurance, repairs and vacancy, net returns often fall to the 3–4% range, below what a 10-year Treasury pays (4.91%) with no work. The higher-ROI angles are cheaper entry points: older condos ($100–200K) and newer townhomes ($200–300K) near the Metra, where rents hold up but prices are lower. Buying quickly matters too, since most homes sell above asking. Treat a possible Bears stadium at Arlington Park as upside, not a guarantee.", "metric": {"change": "+8.7% year over year", "dir": "up", "label": "Median sale price, Q3 2026", "sub": "Redfin: 55.5% of homes sold above list; median 41 days on market (July)", "value": "$386,000"}, "risks": ["High Cook County property taxes cut net rental returns", "Competitive bidding means overpaying is easy", "Prices swing seasonally (Q2 high, Q1/Q4 low), so time purchases carefully", "Stadium upside may never happen if the Bears pick Indiana or Chicago"], "sections": [{"items": [{"date": "Sep 21", "source": "Daily Herald", "text": "Village council approved 38 two- and three-story townhomes on a 4.84-acre former gas station site at Dundee and Quentin roads, across from Deer Grove Forest Preserve. Build time: 18–24 months.", "url": "https://www.dailyherald.com/20260922/news/palatine-greenlights-38-unit-townhouse-development-at-dundee-and-quentin/"}, {"date": "Aug 25", "source": "Daily Herald", "text": "Big Grove Brewery plans to replace Durty Nellie's at 180 N. Smith St. near the downtown Metra station with a brewery, restaurant and event space; the plan won unanimous planning commission support.", "url": "https://www.dailyherald.com/20260826/news/plan-for-brewery-on-durty-nellies-site-advances-to-palatine-village-board/"}, {"date": "May 4", "source": "Palatine council records", "text": "Council approved final plans for a 45,000 sq ft Globe Transportation logistics facility on 7.9 acres on N. Rand Road, with a Cook County Class 6B tax incentive. It also rolled over $36.4M, mostly for capital and downtown projects.", "url": "https://palatine.myopenillinois.org/meetings/2026-05-04-village-council-committee-of-the-whole-meeting-may-4-2026-d2cefc42-c0c1-41ce-a59a-232196844853"}], "title": "Local developments"}, {"items": [{"date": "Nov 2", "source": "StadiumDB", "text": "No final decision yet. The Bears still favor Arlington Heights (the ~$197M Arlington Park site they own, just southeast of Palatine) or Hammond, Indiana; a concept for a Chicago site has no team endorsement.", "url": "https://stadiumdb.com/news/2026/11/usa_could_the_chicago_bears_stay_in_chicago_stadium_concept_unveiled_for_white_sox_site"}, {"date": "Fall", "source": "StadiumDB", "text": "Illinois lawmakers may vote in the fall veto session on a bill letting local governments issue bonds for stadiums, which could unlock an Arlington Park deal.", "url": "https://stadiumdb.com/news/2026/11/usa_could_the_chicago_bears_stay_in_chicago_stadium_concept_unveiled_for_white_sox_site"}], "title": "Regional factor: Bears stadium"}, {"items": [{"date": "Jul", "source": "Redfin", "text": "Median sale price $400,300 (+4.0%), 296 homes sold (+8.3%), sale-to-list ratio 101.6%, only 15.6% of listings cut prices. 89% of local buyers searched to stay in the metro.", "url": "https://www.redfin.com/city/14831/IL/Palatine/housing-market"}, {"date": "Oct 31", "source": "RentCafe", "text": "Average rent $2,046, up from $1,845 a year ago. 1-bedroom about $1,727 (811 sq ft); 2-bedroom about $2,302 (1,150 sq ft).", "url": "https://www.rentcafe.com/average-rent-market-trends/us/il/palatine/"}, {"date": "Aug", "source": "Jaclyn Homes", "text": "Price tiers: older condos and 2-bed ranches $100–200K; newer condos and townhomes $200–300K; 3–4 bed split-levels and Cape Cods $400–500K.", "url": "https://jaclynhomesre.com/blog/palatine-home-prices-in-2026-why-the-median-keeps-changing-its-story"}], "title": "Market data"}], "series": {"label": "Median sale price by quarter, 2022–2026", "points": [["Q1 '22", 269000], ["Q2 '22", 300000], ["Q3 '22", 292000], ["Q1 '23", 271000], ["Q2 '23", 335000], ["Q3 '23", 325000], ["Q4 '23", 290000], ["Q1 '24", 286000], ["Q2 '24", 380000], ["Q3 '24", 349000], ["Q4 '24", 305000], ["Q1 '25", 339000], ["Q2 '25", 385000], ["Q3 '25", 355000], ["Q4 '25", 353000], ["Q1 '26", 350000], ["Q2 '26", 400000], ["Q3 '26", 386000]], "unit": "$"}, "title": "Palatine, IL", "watch": ["Bears stadium decision and the Illinois stadium-bond bill", "Spring 2027 listings: prices usually peak in Q2 each year", "Cook County property tax bills for any specific parcel", "Mortgage rates, which follow the 10-year Treasury (near 4.9%)"]}, "rates": {"analytics": {"current": {"label": "Fed funds now", "num": 3.875, "value": "3.75–4.00%"}, "method": "Signals are read from a saver's point of view: bullish means better yields on new cash. Dollar figures are one-year, pre-tax.", "outlook": {"dir": "up", "label": "Short rates likely up", "summary": "Markets price about a 78% chance the Fed raises rates in December, which would lift savings and T-bill yields further. Long-term yields are already near 5%, so the main risk for bond buyers is prices dipping if yields climb."}, "projections": [{"label": "$10K in high-yield savings", "note": "At 4.70% APY. After 3.7% inflation: +$100 of real gain.", "value": "+$470/yr"}, {"label": "$10K in a 1-year T-bill", "note": "At 4.18%. Real gain +$48, and no state income tax.", "value": "+$418"}, {"label": "$10K in average savings", "note": "At 0.38%. Real loss of about $332 a year.", "value": "+$38/yr"}, {"label": "$10K in a 10-year Treasury", "note": "Coupon income at 4.91%, locked for 10 years.", "value": "$491/yr"}, {"label": "Bond price risk", "note": "If 10-year yields rise 0.5 pt (duration ≈ 8). A 2-year note would lose ≈ 1%.", "value": "≈ −4%"}], "scenarios": [{"change": "22% odds", "name": "Hold", "note": "Savings and T-bill yields stay roughly where they are.", "num": 3.875, "value": "3.75–4.00%"}, {"change": "78% odds", "name": "Hike", "note": "New cash earns about 0.25 pt more; bond prices dip slightly.", "num": 4.125, "value": "4.00–4.25%"}], "signals": [{"label": "Fed dissents", "note": "More hikes mean higher yields on new cash.", "read": "bullish", "value": "2 wanted a hike"}, {"label": "Inflation", "note": "Eats into every fixed return.", "read": "bearish", "value": "3.7% CPI"}, {"label": "Yield curve", "note": "Normal upward slope; locking longer pays a little more.", "read": "neutral", "value": "10y − 3m = +0.70 pt"}, {"label": "Oil", "note": "Keeps inflation, and the Fed, elevated.", "read": "bearish", "value": "> $100/barrel"}]}, "asOf": "Nov 4, 2026", "facts": [["3-month T-bill", "4.03%"], ["Top savings APY", "4.70%"], ["CPI inflation", "3.7%"], ["Real 1-yr yield", "≈ +0.7%"]], "headline": "Safe money pays more than inflation right now: T-bills near 4%, top savings accounts at 4.70%, and the 10-year near 5%, with the Fed leaning toward another hike.", "kind": "rates", "levels": {"expert": {"frameworks": ["Carry breakeven: 10s vs 1-year bill = 73 bp ÷ duration 8 ≈ 9 bp of yield rise", "Barbell (bills + 10s) vs bullet (5s at 4.70%) depending on your hike view", "Tax-equivalent yield: a 3m bill at 4.03% ≈ 4.24% fully taxable at a 4.95% state rate", "Inflation protection: compare TIPS breakevens with your CPI view before choosing nominal bonds"], "take": "The curve is normal and modestly steep: 2s10s +32 bp, 3m10y +70 bp. The front end is pricing hikes (3m CMT ~34 bp over the Fed funds midpoint), so extending duration earns 73 bp of carry over a 1-year bill but loses it if 10-year yields rise only ~9 bp (duration ≈ 8). The 10-year real yield is +1.21 pt against 3.7% CPI."}, "new": {"explain": "When you put cash in a savings account or buy a Treasury bill, you're lending money and getting paid interest. Right now safe options pay about 4% to 4.7% a year. Inflation, at 3.7%, is how fast prices are rising, so your real gain is the difference between the two.", "steps": ["Keep your emergency fund in an FDIC-insured high-yield savings account", "For money you won't need for a few months, compare a T-bill's rate with your savings rate", "T-bills skip state income tax, a bonus if your state has one", "Make sure whatever you pick beats 3.7% inflation"]}}, "meaning": "With inflation at 3.7%, a 4.2–4.7% T-bill or high-yield savings account grows your buying power a little, while the 0.38% national-average savings account loses over 3% a year. Because the Fed may raise rates again, short maturities (under a year) keep you flexible. Locking 5–10-year bonds near 4.7–4.9% makes sense only for money you won't need before they mature.", "metric": {"change": "Closed 5.03% on Oct 28", "dir": "flat", "label": "10-year Treasury, Nov 2", "sub": "Fed funds target 3.75–4.00%", "value": "4.91%"}, "risks": ["Savings rates drop if the Fed eventually cuts", "Bond prices fall if yields rise before you sell", "Taxes: interest is taxed as ordinary income", "Inflation could outrun fixed yields"], "sections": [{"items": [{"date": "Oct 28", "source": "StockAnalysis", "text": "The Fed held at 3.75–4.00% in a 10–2 vote. Both dissenters wanted a hike, and futures priced about 78% odds of a December increase.", "url": "https://stockanalysis.com/news/fed-holds-rates-steady-oct-2026/"}, {"date": "Oct 14", "source": "CPI Inflation Calculator", "text": "September CPI: 3.7% headline and 2.6% core. Energy is the main driver, with oil above $100.", "url": "https://cpiinflationcalculator.com/the-consumer-price-index-rises-0-6-in-september-2026-seasonally-adjusted-and-rises-to-3-7-annually/"}, {"date": "Oct 29", "source": "Fortune", "text": "Top high-yield savings accounts pay up to 4.70% APY; the FDIC national average is 0.38%.", "url": "https://fortune.com/article/best-savings-account-rates-10-29-2026/"}], "title": "News"}, {"items": [{"date": "Nov 2", "source": "Federal Reserve H.15", "text": "4-week bill 3.90%, 3-month 4.03%, 6-month 4.14%, 1-year 4.18% (secondary market). State-tax exempt.", "url": "https://www.federalreserve.gov/releases/h15/"}, {"date": "Nov 2", "source": "Federal Reserve H.15", "text": "2-year note 4.59%, 5-year 4.70%, 30-year bond 5.28%.", "url": "https://www.federalreserve.gov/releases/h15/"}, {"date": "Nov 1", "source": "TreasuryDirect", "text": "I bonds reset their rate every Nov 1 and May 1. The May–Oct 2026 rate was 4.26%; check TreasuryDirect for the new one.", "url": "https://treasurydirect.gov/savings-bonds/i-bonds/i-bonds-interest-rates/"}], "title": "Rate menu for beginners"}], "series": {"label": "Treasury yield curve, Nov 2, 2026", "points": [["3M", 4.21], ["6M", 4.25], ["1Y", 4.38], ["2Y", 4.59], ["5Y", 4.7], ["10Y", 4.91], ["30Y", 5.28]], "unit": "%"}, "title": "Treasury & Savings Rates", "watch": ["December Fed meeting: hike or hold?", "October CPI report", "Whether the 10-year breaks back above 5%", "Savings APYs, which follow the Fed"]}}};
+let snapMode=false;
+const KIND={stock:"Stock",fund:"Fund / ETF",land:"Land",realestate:"Housing market",crypto:"Crypto",rates:"Rates & bonds",commodity:"Commodity"};
+const PRO_KEY="fp_pro_v1";
+let pro=false;try{pro=localStorage.getItem(PRO_KEY)==="1"}catch(e){}
+let fpdb=null,watch=[],briefs={},sel=null,loaded=false;
+const safeUrl=u=>/^https?:\/\//i.test(String(u||""))?String(u):null;
+const str=v=>v==null?"":String(v);
+
+function setPro(on){
+  pro=on;try{localStorage.setItem(PRO_KEY,on?"1":"0")}catch(e){}
+  $("#unlock").textContent=on?"Pro demo unlocked ✓":"Unlock Pro demo";
+  $("#pro-state").textContent=on?"Pro":"Preview";$("#pro-state").classList.toggle("on",on);
+  ["#add-kind","#add-name","#add-note","#add-btn"].forEach(s=>$(s).disabled=!on||!fpdb);
+  $("#add-msg").textContent=snapMode?"This public view shows the agent's saved briefings from Nov 4, 2026. Adding holdings works for signed-in Claude users.":!on?"Unlock Pro to add your own holdings.":!fpdb?"Open this page in Claude while signed in to save a watchlist.":"";
+}
+$("#unlock").addEventListener("click",()=>setPro(!pro));
+
+function renderSuggest(){
+  const map={stocks:["stock","A company you follow"],dividend:["stock","A dividend payer"],index:["fund","Your index fund"],target:["fund","Your target-date fund"],mutual:["fund","A mutual fund"],bondfund:["fund","A bond fund"],land:["land","A county you'd buy land in"],rental:["realestate","A city you'd rent in"],reits:["fund","A REIT fund"],recrowd:["realestate","A crowdfunding market"],crypto:["crypto","Ethereum"],gold:["commodity","Gold"],tbills:["rates","T-bill yields"],tnotes:["rates","Treasury yields"],ibonds:["rates","I bond rate"],hysa:["rates","Savings rates"],cds:["rates","CD rates"],corpbonds:["rates","Corporate bond yields"]};
+  const seen=new Set();const out=[];
+  for(const m of ranked.slice(0,8)){const s=map[m.a.id];if(s&&!seen.has(s[1])){seen.add(s[1]);out.push(s)}if(out.length>=4)break}
+  $("#suggest").innerHTML=out.length?`<span class="note" style="width:100%">From your matches:</span>`+out.map(([k,l])=>`<button type="button" data-k="${k}" data-l="${esc(l)}">${esc(l)}</button>`).join(""):"";
+}
+$("#suggest").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;$("#add-kind").value=b.dataset.k;const n=$("#add-name");n.value="";n.placeholder={stock:"Ticker, e.g. MSFT",fund:"Fund name or ticker",land:"County, State",realestate:"City, State",crypto:"Coin name",rates:"e.g. 6-month T-bill",commodity:"e.g. Gold"}[b.dataset.k]||"";n.focus()});
+
+$("#add-form").addEventListener("submit",async e=>{
+  e.preventDefault();if(!pro||!fpdb)return;
+  const name=$("#add-name").value.trim();if(!name){$("#add-msg").textContent="Enter what you want tracked.";return}
+  if(watch.length>=10){$("#add-msg").textContent="Pro tracks up to 10 holdings. Remove one to add another.";return}
+  $("#add-btn").disabled=true;
+  try{
+    const ref=await fpdb.collection("watch").add({kind:$("#add-kind").value,name,note:$("#add-note").value.trim(),status:"queued",createdAt:new Date().toISOString(),source:"user"});
+    sel=ref.id;$("#add-name").value="";$("#add-note").value="";$("#add-msg").textContent="Added. Your agent researches it on the next morning run.";
+  }catch(err){$("#add-msg").textContent=err&&err.code==="invalid_argument"?"You can view this watchlist but not add to it. Ask the owner for Contributor access.":err&&err.code==="quota_exceeded"?"The watchlist is full.":"Couldn't save that. Try again in a moment."}
+  finally{$("#add-btn").disabled=false}
+});
+
+function renderWatch(){
+  if(!fpdb&&!snapMode){$("#watch-list").innerHTML=`<p class="note">Your watchlist and daily briefings load when this page is opened in Claude while signed in.</p>`;return}
+  if(!loaded){return}
+  if(!watch.length){$("#watch-list").innerHTML=`<p class="note">Nothing tracked yet. Add a holding below.</p>`;return}
+  $("#watch-list").innerHTML=watch.map(w=>{const ready=!!briefs[w.id];return `<button type="button" class="w-item" data-w="${esc(w.id)}" aria-current="${w.id===sel}"><b>${esc(w.name)}</b><span class="st ${ready?"ready":"queued"}">${ready?"Ready":"Queued"}</span><small>${esc(KIND[w.kind]||w.kind)}${ready&&briefs[w.id].asOf?" · "+esc(briefs[w.id].asOf):""}</small></button>`}).join("");
+}
+$("#watch-list").addEventListener("click",e=>{const b=e.target.closest("[data-w]");if(!b)return;sel=b.dataset.w;renderWatch();renderBrief()});
+
+let pendingChart=null;
+function lineChart(series){
+  const pts=(series.points||[]).map(p=>[str(p[0]),+p[1]]).filter(p=>isFinite(p[1]));
+  if(pts.length<2)return"";
+  const W=640,H=210,L=58,R=16,T=14,B=30,pw=W-L-R,ph=H-T-B;
+  let lo=Math.min(...pts.map(p=>p[1])),hi=Math.max(...pts.map(p=>p[1]));const pad=(hi-lo)*.12||hi*.05||1;lo-=pad;hi+=pad;
+  const step=niceStep(hi-lo);lo=Math.floor(lo/step)*step;hi=Math.ceil(hi/step)*step;
+  const x=i=>L+pw*i/(pts.length-1),y=v=>T+ph*(1-(v-lo)/(hi-lo));
+  const unit=str(series.unit),fmt=v=>(unit==="$"?"$":"")+(Math.abs(v)>=1000?Math.round(v).toLocaleString("en-US"):(+v.toFixed(2)).toString())+(unit&&unit!=="$"?unit:"");
+  let g="";for(let v=lo;v<=hi+1e-9;v+=step)g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="JetBrains Mono,monospace">${esc(fmt(v))}</text>`;
+  const every=Math.max(1,Math.ceil(pts.length/7));
+  pts.forEach((p,i)=>{if(i%every===0||i===pts.length-1)g+=`<text x="${x(i)}" y="${H-8}" text-anchor="${i===0?"start":i===pts.length-1?"end":"middle"}" font-size="10.5" fill="var(--muted)" font-family="JetBrains Mono,monospace">${esc(p[0])}</text>`});
+  const d=pts.map((p,i)=>`${i?"L":"M"}${x(i).toFixed(1)},${y(p[1]).toFixed(1)}`).join("");
+  const area=d+`L${x(pts.length-1)},${T+ph}L${L},${T+ph}Z`;
+  const last=pts[pts.length-1];
+  const fv=v=>(unit==="$"?"$":"")+(Math.abs(v)>=1000?Math.round(v).toLocaleString("en-US"):(+(+v).toFixed(2)).toString())+(unit&&unit!=="$"?unit:"");
+  const pct=(a,b)=>b?((a/b-1)*100):0,sg=n=>(n>=0?"+":"")+n.toFixed(1)+"%";
+  pendingChart={xs:pts.map((_,i)=>x(i)),top:T,bottom:T+ph,
+    pts:i=>[{x:x(i),y:y(pts[i][1]),c:"var(--gold)"}],
+    row:i=>{const v=pts[i][1],lines=[["var(--gold)","Value",fv(v)]];
+      if(i>0)lines.push([v>=pts[i-1][1]?"var(--good)":"var(--bad)",`vs ${pts[i-1][0]}`,sg(pct(v,pts[i-1][1]))]);
+      if(i>0)lines.push([v>=pts[0][1]?"var(--good)":"var(--bad)",`vs ${pts[0][0]}`,sg(pct(v,pts[0][1]))]);
+      const hiV=Math.max(...pts.map(p=>p[1])),loV=Math.min(...pts.map(p=>p[1]));
+      return {title:pts[i][0],lines,note:v===hiV?"Highest point in this chart":v===loV?"Lowest point in this chart":`${sg(pct(v,hiV))} from the chart's high`}}};
+  return `<div class="eyebrow" style="margin-bottom:4px">${esc(series.label||"")}</div><div class="chartwrap"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(series.label||"Chart")}. Hover or use arrow keys for values.">${g}<path d="${area}" fill="var(--gold)" opacity=".12"/><path d="${d}" fill="none" stroke="var(--gold)" stroke-width="2.5"/><circle cx="${x(pts.length-1)}" cy="${y(last[1])}" r="4.5" fill="var(--gold)"/></svg><div class="tip" hidden></div></div><div class="hint">Hover, tap or use arrow keys to read values.</div>`;
+}
+function itemsHtml(items){
+  return `<ul class="bv-items">${(items||[]).map(it=>{const u=safeUrl(it.url);return `<li><time>${esc(it.date||"")}</time><div>${esc(it.text)}${u?` <a href="${esc(u)}" target="_blank" rel="noopener">${esc(it.source||"Source")} ↗</a>`:it.source?` <span class="note">${esc(it.source)}</span>`:""}</div></li>`}).join("")}</ul>`;
+}
+function analyticsHtml(a){
+  if(!a)return"";
+  const o=a.outlook||{},dir=["up","down","mixed","flat"].includes(o.dir)?o.dir:"mixed",arrow={up:"↗",down:"↘",mixed:"↔",flat:"→"}[dir];
+  const sc=(a.scenarios||[]).filter(x=>isFinite(+x.num));const cur=a.current&&isFinite(+a.current.num)?a.current:null;
+  let scale="";
+  if(sc.length){const nums=sc.map(x=>+x.num).concat(cur?[+cur.num]:[]);let lo=Math.min(...nums),hi=Math.max(...nums);const pad=(hi-lo)*.08||Math.abs(hi)*.05||1;lo-=pad;hi+=pad;
+    const pos=v=>((v-lo)/(hi-lo)*100).toFixed(2)+"%";
+    scale=`<div class="scale" aria-hidden="true"><div class="scale-track"></div>${sc.map(x=>`<span class="mk-lab" style="left:${pos(+x.num)}">${esc(x.name)}</span><button type="button" class="mk" tabindex="-1" style="left:${pos(+x.num)}" data-tip="${esc(x.name)}: ${esc(x.value)} (${esc(x.change)})"></button>`).join("")}${cur?`<button type="button" class="mk now" tabindex="-1" style="left:${pos(+cur.num)}" data-tip="Now: ${esc(cur.value)}"></button>`:""}</div>`}
+  const scenHtml=sc.length?`<div><div class="bv-sec"><h4>Price scenarios${cur?` · now ${esc(cur.value)}`:""}</h4></div>${scale}<div class="scen" style="margin-top:12px">${(a.scenarios||[]).map(x=>{const c=str(x.change);const cl=/^[−-]/.test(c)?"down":/^\+/.test(c)&&c!=="+0%"?"up":"flat";return `<div><div class="nm">${esc(x.name)}</div><span class="vl">${esc(x.value)}</span><span class="ch ${cl}">${esc(c)}</span><p>${esc(x.note)}</p></div>`}).join("")}</div></div>`:"";
+  const detail=`${(a.projections||[]).length?`<div><div class="bv-sec"><h4>Projected revenue, costs &amp; returns</h4></div><dl class="proj-grid">${a.projections.map(x=>`<div><dt>${esc(x.label)}</dt><dd>${esc(x.value)}</dd><p>${esc(x.note)}</p></div>`).join("")}</dl></div>`:""}
+   ${(a.signals||[]).length?`<div><div class="bv-sec"><h4>Market signals</h4></div><div class="sig-wrap"><table class="sig">${a.signals.map(x=>{const r=["bullish","bearish","neutral"].includes(x.read)?x.read:"neutral";return `<tr><td>${esc(x.label)}<br><small>${esc(x.note)}</small></td><td>${esc(x.value)}</td><td style="text-align:right"><span class="read ${r}">${r[0].toUpperCase()+r.slice(1)}</span></td></tr>`}).join("")}</table></div></div>`:""}
+   ${a.method?`<p class="note" style="margin:0">${esc(a.method)}</p>`:""}`;
+  return `<div class="an">
+   <div class="an-head"><h4>${level==="new"?"Where this could go":"Projections &amp; market analytics"}</h4><span class="dirpill dir-${dir}">${arrow} Outlook: ${esc(o.label||"")}</span></div>
+   <p class="an-sum">${esc(o.summary||"")}</p>
+   ${scenHtml}
+   ${level==="new"?`<details class="more"><summary>Show projections, costs and market signals</summary><div>${detail}</div></details>`:detail}
+  </div>`;
+}
+function chartStats(series){
+  if(/curve/i.test(str(series.label)))return"";
+  const pts=(series.points||[]).map(p=>+p[1]).filter(isFinite);if(pts.length<2)return"";
+  const u=str(series.unit),f=v=>(u==="$"?"$":"")+(Math.abs(v)>=1000?Math.round(v).toLocaleString("en-US"):(+v.toFixed(2)))+(u&&u!=="$"?u:"");
+  const first=pts[0],last=pts[pts.length-1],hi=Math.max(...pts),lo=Math.min(...pts);
+  let peak=pts[0],mdd=0;pts.forEach(v=>{if(v>peak)peak=v;mdd=Math.min(mdd,v/peak-1)});
+  const ch=(last/first-1)*100;
+  const items=[["Period change",(ch>=0?"+":"")+ch.toFixed(1)+"%"],["High",f(hi)],["Low",f(lo)],["Max drawdown",(mdd*100).toFixed(1)+"%"]];
+  if(/daily/i.test(str(series.label))&&pts.length>10){const r=[];for(let i=1;i<pts.length;i++)r.push(Math.log(pts[i]/pts[i-1]));const m=r.reduce((a,b)=>a+b,0)/r.length;const sd=Math.sqrt(r.reduce((a,b)=>a+(b-m)**2,0)/(r.length-1));items.push(["Annualized vol",(sd*Math.sqrt(252)*100).toFixed(1)+"%"])}
+  else items.push(["Position in range",Math.round((last-lo)/((hi-lo)||1)*100)+"%"]);
+  return `<dl class="cstats">${items.map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>`;
+}
+let proBooted=false;
+function renderBrief(){
+  const v=$("#brief-view");
+  if(!proBooted){v.innerHTML=`<div class="empty"><h3>Loading briefings…</h3></div>`;return}
+  if(!fpdb&&!snapMode){v.innerHTML=`<div class="empty"><h3>Your agent's briefings live here</h3><p>Open this page in Claude while signed in to load the watchlist and today's research.</p></div>`;return}
+  if(!loaded){v.innerHTML=`<div class="empty"><h3>Loading briefings…</h3></div>`;return}
+  if(!sel||!watch.find(w=>w.id===sel))sel=watch[0]&&watch[0].id;
+  const w=watch.find(x=>x.id===sel);
+  if(!w){v.innerHTML=`<div class="empty"><h3>No holdings tracked yet</h3><p>Add a stock, county, coin or rate on the left and your agent will research it on the next morning run.</p></div>`;return}
+  const b=briefs[w.id];
+  if(!b){v.innerHTML=`<div class="empty"><h3>${esc(w.name)} is queued</h3><p>Your agent will research this ${esc((KIND[w.kind]||"holding").toLowerCase())} on its next morning run${w.note?`, focusing on: ${esc(w.note)}`:""}.</p><p style="margin-top:14px"><button class="btn small" data-askw="${esc(w.id)}">Ask the analyst about it now</button></p>${w.source==="user"?`<p style="margin-top:8px"><button class="btn ghost small" data-rm="${esc(w.id)}">Remove from watchlist</button></p>`:""}</div>`;return}
+  const m=b.metric||{};const dir=["up","down","flat"].includes(m.dir)?m.dir:"flat";
+  const LB=b.levels||{},ln=LB.new||{},lx=LB.expert||{};
+  const plain=level==="new"&&ln.explain?`<div class="plain"><h4>In plain English</h4><p>${esc(ln.explain)}</p>${(ln.steps||[]).length?`<h4 style="margin-top:12px">First steps</h4><ol>${ln.steps.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>`:""}</div>`:"";
+  const take=level==="expert"&&lx.take?`<div class="protake"><div class="eyebrow">Analyst take</div><p>${esc(lx.take)}</p>${(lx.frameworks||[]).length?`<ul class="bv-list">${lx.frameworks.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}</div>`:"";
+  const cst=level==="expert"&&b.series?chartStats(b.series):"";
+  v.innerHTML=`
+   <div class="bv-head"><div style="min-width:0;flex:1 1 320px"><div class="bv-kind">${esc(KIND[w.kind]||w.kind)} · Briefing for ${esc(b.asOf||"")}</div><h3>${esc(b.title||w.name)}</h3><p class="bv-headline">${esc(b.headline||"")}</p></div>
+   <div class="bv-metric"><div class="l">${esc(m.label||"")}</div><div class="v">${esc(m.value||"")}</div><div class="c ${dir}">${esc(m.change||"")}</div><div class="s">${esc(m.sub||"")}</div></div></div>
+   ${plain}
+   ${b.series?`<div class="bv-chart">${lineChart(b.series)}</div>`:""}
+   ${cst}
+   ${(b.facts||[]).length?`<dl class="bv-facts">${b.facts.map(f=>`<div><dt>${esc(f[0])}</dt><dd>${esc(f[1])}</dd></div>`).join("")}</dl>`:""}
+   <div class="bv-mean"><h4>What this means for you</h4><p>${esc(b.meaning||"")}</p></div>
+   ${take}
+   ${analyticsHtml(b.analytics)}
+   <div class="bv-cols">${(b.sections||[]).map(s=>`<div class="bv-sec"><h4>${esc(s.title)}</h4>${itemsHtml(s.items)}</div>`).join("")}</div>
+   <div class="bv-cols">
+     <div class="bv-sec"><h4>Watch next</h4><ul class="bv-list">${(b.watch||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+     <div class="bv-sec"><h4>Key risks</h4><ul class="bv-list">${(b.risks||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+   </div>
+   <div class="bv-foot"><span class="note">Research by your agent from public sources. Educational, not advice.</span><span style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn small" data-askw="${esc(w.id)}">Ask the agent about this</button>${w.source==="user"?`<button class="btn ghost small" data-rm="${esc(w.id)}">Remove</button>`:""}</span></div>`;
+  const cw=v.querySelector(".bv-chart .chartwrap");if(cw&&pendingChart)bindHover(cw,pendingChart);pendingChart=null;
+  glossIn(v);
+}
+$("#brief-view").addEventListener("click",async e=>{
+  const a=e.target.closest("[data-askw]");
+  if(a){const w=watch.find(x=>x.id===a.dataset.askw);const b=briefs[w.id];
+    const extra=b?`AGENT BRIEFING ON ${w.name} (as of ${b.asOf}): ${JSON.stringify({headline:b.headline,metric:b.metric,facts:b.facts,analytics:b.analytics,levels:b.levels,sections:b.sections,meaning:b.meaning,risks:b.risks}).slice(0,16000)}`:`The user tracks ${w.name} (${KIND[w.kind]}); no researched briefing yet, so say what you know generally and what the agent will check.`;
+    askAI(b?(level==="new"?`Explain today's ${w.name} briefing in simple words. What does it mean for me, and what's one thing I should do or learn next?`:level==="expert"?`Give me your read on today's ${w.name} briefing: what's priced in, the key variable to underwrite, the asymmetry across scenarios, and how you'd size or hedge it for my profile.`:`Walk me through today's ${w.name} briefing. What matters most for someone with my profile, and what should I do or check next?`):`What should I know about ${w.name} before investing, and what should I track?`,extra);return}
+  const r=e.target.closest("[data-rm]");
+  if(r&&fpdb){try{await fpdb.doc("watch/"+r.dataset.rm).delete();sel=null}catch(err){$("#add-msg").textContent="Couldn't remove that item."}}
+});
+
+async function bootPro(){
+  try{fpdb=window.claude?await window.claude.use("db"):null}catch(e){fpdb=null}
+  proBooted=true;
+  if(!fpdb){snapMode=true;watch=SNAPSHOT.watch;briefs=SNAPSHOT.briefs;loaded=true;setPro(pro);renderWatch();renderBrief();return}
+  setPro(pro);
+  const t=setTimeout(()=>{if(!loaded){$("#watch-list").innerHTML=`<p class="note">Can't reach your watchlist yet. It will appear when the connection returns.</p>`}},10000);
+  let gotW=false,gotB=false;
+  const done=()=>{if(gotW&&gotB){loaded=true;clearTimeout(t)}renderWatch();renderBrief()};
+  fpdb.collection("watch").orderBy("createdAt").onSnapshot(s=>{watch=s.docs.map(d=>({id:d.id,...d.data()}));gotW=true;done()},()=>{gotW=true;done()});
+  fpdb.collection("briefs").onSnapshot(s=>{briefs={};s.docs.forEach(d=>briefs[d.id]=d.data());gotB=true;done()},()=>{gotB=true;done()});
+}
+
+/* ---------- AI Analyst ---------- */
+let sample=null,busy=false,ctl=null;const turns=[];
+const PROMPTS={
+  new:["What's the difference between a stock and a bond?","How do I open my first investment account?","Is a high-yield savings account safe?","How much do I need to start?","Build me a simple 90-day plan"],
+  intermediate:["T-bills or high-yield savings for me?","How do I buy my first index fund?","Is raw land realistic for me?","What does a 10-year yield near 5% mean for me?","Build me a 90-day action plan"],
+  expert:["Barbell or bullet on today's curve?","What equity risk premium does AAPL's multiple imply?","Size a BTC position for 1 point of portfolio vol","Stress-test my allocation for a 2022-style rate shock","Where's the tax-loss harvesting opportunity this year?"]};
+let aiOff=false;
+function renderPrompts(){$("#prompts").innerHTML=PROMPTS[level].map(p=>`<button type="button" ${aiOff?"disabled":""}>${esc(p)}</button>`).join("");
+  $("#ask").placeholder=level==="new"?"e.g. What is an index fund?":level==="expert"?"e.g. What's the carry breakeven on 10s vs bills?":"e.g. Should I start with T-bills or a high-yield savings account?"}
+$("#prompts").addEventListener("click",e=>{const b=e.target.closest("button");if(b)askAI(b.textContent,"")});
+$("#explain-matches").addEventListener("click",()=>askAI("Explain my top 5 matches: why each fits, how they work together, and which one I should research first.",""));
+$("#composer").addEventListener("submit",e=>{e.preventDefault();const v=$("#ask").value.trim();if(v){$("#ask").value="";askAI(v)}});
+$("#stop").addEventListener("click",()=>ctl&&ctl.abort());
+
+function context(extra){
+  const pr=profile();const [lab]=riskLabel(pr.s);
+  const top=ranked.slice(0,8).map((m,i)=>`${i+1}. ${m.a.name} (fit ${m.f}/100; risk ${m.a.risk}/5; ${m.warn.length?"concerns: "+m.warn.join("; "):"no major concerns"})`).join("\n");
+  const al=BUCKETS.filter(b=>curAlloc[b.k]).map(b=>`${b.l} ${curAlloc[b.k]}%`).join(", ");
+  const goal={safety:"emergency fund",short:"purchase in 1–3 years",growth:"long-term growth",income:"steady income",learn:"learning by investing"}[P.goal];
+  const LVL_RULE={new:"The user is NEW to investing. Explain as if they've never invested: define every financial term in plain words the first time you use it, use everyday analogies, skip jargon and formulas, and keep answers under 180 words.",
+    intermediate:"The user knows the basics. Teach clearly in plain English, using standard terms (expense ratio, duration, P/E) with a brief reminder of what they mean. Keep answers under 230 words.",
+    expert:"The user is an EXPERIENCED investor. Don't define basics. Use precise terminology and think in frameworks: duration and carry, equity risk premium, cap rates and DSCR, volatility-based sizing, correlation, tax optimization. Quantify trade-offs and be concise and dense. Keep answers under 250 words."}[level];
+  return `You are the First Position Analyst inside an educational investing website. Today is November 5, 2026; market data below is from Nov 2–4.
+
+USER EXPERIENCE LEVEL: ${LEVELS[level].name}. ${LVL_RULE}
+
+USER PROFILE: ${lab} (risk score ${pr.score}/100). Goal: ${goal}. Horizon: ${HOR_TXT[+P.hor]}. Reaction to a 25% drop: ${Q[2].o[+P.drop][1]}. Starting amount: ${AMT_TXT[+P.amt]}. Access needed: ${LIQ_TXT[pr.liq]}. Hands-on preference: ${Q[5].o.find(o=>o[0]===P.eff)[1]}. Interests: ${P.int.join(", ")||"none"}.
+
+RANKED MATCHES:
+${top}
+
+MODEL ALLOCATION: ${al}. Projection: start $${projCache.start}, $${projCache.mon}/month for ${projCache.yrs} years, expected ${projCache.mu?.toFixed(1)}%/yr -> about ${money(projCache.mid||0)} (weak ${money(projCache.lo||0)}, strong ${money(projCache.hi||0)}; deposits ${money(projCache.paid||0)}).
+
+MARKET SNAPSHOT (verified, Nov 2–4 2026): Fed funds target 3.75–4.00%, held Oct 28 in a 10–2 vote after a September hike; futures ~78% odds of a December hike. Treasury yields Nov 2: 3-mo bill 4.03% (CMT 4.21%), 1-yr 4.38% CMT, 2-yr 4.59%, 5-yr 4.70%, 10-yr 4.91% (closed 5.03% Oct 28), 30-yr 5.28%. Top high-yield savings up to 4.70% APY; national average 0.38%. Sept CPI 3.7% y/y, core 2.6%; WTI oil above $100, up ~78% YTD. S&P 500 7,568.92 on Nov 3, +10.6% YTD. Bitcoin ~$77–80K. I bonds: 4.26% composite (0.90% fixed) for May–Oct 2026 purchases; the Nov 1 reset rate should be checked on TreasuryDirect.
+
+RULES: Use the profile and numbers above; show simple math when helpful. Give concrete next steps (which account to open, what to compare, what to check). Always name the main risks. You are educational, not a licensed advisor: do not tell the user to buy a specific stock, coin or named fund, but you may describe fund categories and how to evaluate them. If asked about events after Nov 4 2026 or data not above, say so and suggest where to check. Format with short paragraphs, "- " bullets, and **bold** for key terms. No tables, no headings with #.${extra?"\n\n"+extra:""}`;
+}
+function md(t){
+  const lines=esc(t).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").split(/\n/);
+  let h="",mode="";
+  for(let ln of lines){
+    const ul=ln.match(/^\s*[-*•]\s+(.*)/),ol=ln.match(/^\s*\d+[.)]\s+(.*)/);
+    const want=ul?"ul":ol?"ol":"";
+    if(mode&&mode!==want){h+=`</${mode}>`;mode=""}
+    if(want){if(!mode){h+=`<${want}>`;mode=want}h+=`<li>${(ul||ol)[1]}</li>`;continue}
+    ln=ln.replace(/^#+\s*/,"");
+    if(ln.trim())h+=`<p>${ln}</p>`;
+  }
+  if(mode)h+=`</${mode}>`;
+  return h;
+}
+const ERR={not_granted:"The analyst needs your permission to use Claude. Reload the page to be asked again.",sampling_disabled:"Claude isn't available on this account.",rate_limited:"Too many questions at once. Wait a minute and try again.",session_expired:"Your session expired. Sign in to Claude again.",refused:"The analyst couldn't answer that one. Try rephrasing.",empty_completion:"No answer came back. Try a shorter question."};
+function addMsg(cls,html){const d=document.createElement("div");d.className="msg "+cls;d.innerHTML=html;$("#log").append(d);$("#log").scrollTop=$("#log").scrollHeight;return d}
+let lastExtra="";
+async function askAI(q,extra){
+  if(extra!==undefined)lastExtra=extra;
+  if(!sample){$("#analyst").scrollIntoView({behavior:"smooth"});return}
+  if(busy)return;
+  $("#analyst").scrollIntoView({behavior:"smooth",block:"start"});
+  busy=true;$("#send").disabled=true;$("#stop").hidden=false;
+  addMsg("user",esc(q));
+  turns.push({role:"user",content:q});
+  while(turns.length>12)turns.splice(0,2);
+  const bubble=addMsg("ai","<p><em>Thinking…</em></p>");
+  ctl=new AbortController();
+  try{
+    const {text}=await sample([{role:"user",content:context(lastExtra)},{role:"assistant",content:"Understood. I'll use this profile and market data."},...turns],{cache:false,signal:ctl.signal,onText:({text})=>{bubble.innerHTML=md(text);$("#log").scrollTop=$("#log").scrollHeight}});
+    bubble.innerHTML=md(text);glossIn(bubble);turns.push({role:"assistant",content:text});
+  }catch(e){
+    if(e&&e.text){bubble.innerHTML=md(e.text);turns.push({role:"assistant",content:e.text})}else{bubble.remove();turns.pop()}
+    if(e&&e.code&&e.code!=="cancelled")addMsg("err",esc(ERR[e.code]||"Something interrupted the answer. Try again."));
+    if(e&&(e.code==="not_granted"||e.code==="sampling_disabled")){disableAI()}
+  }finally{busy=false;$("#send").disabled=false;$("#stop").hidden=true}
+}
+function disableAI(){aiOff=true;sample=null;$("#offline").hidden=false;$("#send").disabled=true;$("#ask").disabled=true;document.querySelectorAll("[data-brief],#explain-matches,#prompts button").forEach(b=>b.disabled=true)}
+
+/* ---------- Glossary tooltips (new investors) ---------- */
+function glossIn(root){
+  if(level!=="new"||!root)return;
+  const seen=new Set(),nodes=[];
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const pe=n.parentElement;if(!pe||pe.closest("a,button,summary,.term,svg,script,style,select,textarea,h1,h2,h3,.tip,dt,.fig"))return NodeFilter.FILTER_REJECT;return GL_TEST.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT}});
+  while(w.nextNode())nodes.push(w.currentNode);
+  root.querySelectorAll(".term").forEach(t=>seen.add(t.dataset.key));
+  for(const n of nodes){
+    const re=new RegExp(GL_SRC,"gi"),txt=n.nodeValue;let last=0,m,frag=null;
+    while((m=re.exec(txt))){const hit=GL_MAP[m[1].toLowerCase()];if(!hit||seen.has(hit[0]))continue;
+      if(m[1]==="fed"||(m[1].toLowerCase()==="cd"&&m[1]!=="CD"))continue;
+      seen.add(hit[0]);frag=frag||document.createDocumentFragment();
+      frag.append(txt.slice(last,m.index));const sp=document.createElement("span");sp.className="term";sp.tabIndex=0;sp.dataset.key=hit[0];sp.dataset.def=hit[1];sp.textContent=m[1];frag.append(sp);last=m.index+m[1].length}
+    if(frag){frag.append(txt.slice(last));n.replaceWith(frag)}
+  }
+}
+const gtip=document.createElement("div");gtip.className="gtip";gtip.hidden=true;gtip.setAttribute("role","tooltip");document.body.appendChild(gtip);
+function showG(t){gtip.innerHTML=`<b>${esc(t.dataset.key)}</b>${esc(t.dataset.def)}`;gtip.hidden=false;const r=t.getBoundingClientRect(),w=gtip.offsetWidth,h=gtip.offsetHeight;
+  gtip.style.left=Math.min(Math.max(8,r.left+r.width/2-w/2),innerWidth-w-8)+"px";let top=r.top-h-8;if(top<8)top=r.bottom+8;gtip.style.top=top+"px"}
+document.addEventListener("pointerover",e=>{const t=e.target.closest&&e.target.closest(".term");if(t)showG(t)});
+document.addEventListener("pointerout",e=>{const t=e.target.closest&&e.target.closest(".term");if(t&&!t.contains(e.relatedTarget))gtip.hidden=true});
+document.addEventListener("focusin",e=>{const t=e.target.closest&&e.target.closest(".term");if(t)showG(t);else gtip.hidden=true});
+addEventListener("scroll",()=>{gtip.hidden=true},{passive:true,capture:true});
+
+/* ---------- Expert desk ---------- */
+const RF=4.03;
+const CORR={cash:{bonds:.2,stocks:0,re:0,alt:0},bonds:{stocks:.2,re:.3,alt:.1},stocks:{re:.7,alt:.4},re:{alt:.3}};
+const rho=(a,b)=>a===b?1:((CORR[a]&&CORR[a][b]!=null)?CORR[a][b]:CORR[b][a]);
+function riskOf(w){let mu=0,v=0;BUCKETS.forEach(a=>{mu+=w[a.k]*a.ret;BUCKETS.forEach(b=>{v+=w[a.k]*w[b.k]*a.vol*b.vol*rho(a.k,b.k)})});return {mu,sig:Math.sqrt(v)}}
+let dw=null,mxSort={k:"fit",d:-1};
+function initDesk(){
+  $("#dw-sliders").innerHTML=BUCKETS.map(b=>`<div class="sl"><label for="dw-${b.k}" style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink)"><span class="sw" style="background:${b.c};margin:0"></span>${b.l}</label><input id="dw-${b.k}" type="range" min="0" max="100" step="1" data-k="${b.k}"><output id="dw-${b.k}-o" for="dw-${b.k}"></output></div>`).join("");
+  $("#dw-sliders").addEventListener("input",e=>{const k=e.target.dataset.k;if(!k)return;dw[k]=+e.target.value;drawBuilder()});
+  $("#dw-load").addEventListener("click",()=>{dw={...curAlloc};syncSliders();drawBuilder()});
+  $("#dw-val").addEventListener("input",drawBuilder);
+  $("#tey-rate").addEventListener("input",drawSpreads);
+  $("#sz-asset").innerHTML=A.map(a=>`<option value="${a.id}">${esc(a.name)} (σ ${a.vol}%)</option>`).join("");
+  $("#sz-asset").value="crypto";
+  ["#sz-val","#sz-bud","#sz-asset"].forEach(x=>$(x).addEventListener("input",drawSizer));
+  $("#mx").addEventListener("click",e=>{const b=e.target.closest("[data-sort]");if(!b)return;const k=b.dataset.sort;mxSort=mxSort.k===k?{k,d:-mxSort.d}:{k,d:k==="name"?1:-1};drawMatrix()});
+}
+function syncSliders(){BUCKETS.forEach(b=>{$("#dw-"+b.k).value=dw[b.k]})}
+function drawSpreads(){
+  const c=Object.fromEntries(CURVE.map(x=>[x[0],x[2]]));const bp=v=>(v>=0?"+":"")+Math.round(v*100)+" bp";
+  const rows=[["2s10s",bp(c["10Y"]-c["2Y"]),"Normal, modestly steep slope"],["3m10y",bp(c["10Y"]-c["3M"]),"Term premium for locking 10 years"],["10s30s",bp(c["30Y"]-c["10Y"]),"Long-end steepness"],["3m CMT vs Fed funds mid",bp(c["3M"]-3.875),"Bills above policy rate: market pricing hikes"],["10-year real yield",(c["10Y"]-CPI>=0?"+":"")+(c["10Y"]-CPI).toFixed(2)+" pt","Nominal 10-year minus 3.7% CPI"],["Top HYSA vs 3m bill",bp(4.70-4.03),"Before tax; bills are state-tax exempt"]];
+  $("#spreads").innerHTML=rows.map(r=>`<div><dt>${r[0]}</dt><dd>${r[1]}</dd><small>${r[2]}</small></div>`).join("");
+  const t=Math.min(15,Math.max(0,+$("#tey-rate").value||0))/100;
+  $("#tey-out").innerHTML=`A 3-month T-bill at 4.03% equals a fully taxable <strong class="num">${(4.03/(1-t)).toFixed(2)}%</strong> at a ${(t*100).toFixed(2)}% state rate, vs 4.70% for the top savings account.`;
+}
+function drawBuilder(){
+  if(!dw)return;const tot=BUCKETS.reduce((a,b)=>a+dw[b.k],0);
+  BUCKETS.forEach(b=>{$("#dw-"+b.k+"-o").textContent=tot?Math.round(dw[b.k]/tot*100)+"%":"0%"});
+  if(!tot){$("#dw-kpis").innerHTML=`<div style="grid-column:1/-1"><span>Move a slider to build an allocation.</span></div>`;$("#dw-bar").innerHTML="";return}
+  const w={};BUCKETS.forEach(b=>w[b.k]=dw[b.k]/tot);
+  const m={};BUCKETS.forEach(b=>m[b.k]=(curAlloc[b.k]||0)/100);
+  const r=riskOf(w),rm=riskOf(m),sh=(r.mu-RF)/r.sig,shm=(rm.mu-RF)/rm.sig,var95=r.mu-1.645*r.sig,var95m=rm.mu-1.645*rm.sig;
+  const val=Math.max(0,+$("#dw-val").value||0);
+  const d=(a,b,u="pt",k=1)=>{const x=(a-b)*k;return `${x>=0?"+":""}${x.toFixed(u==="pt"?1:2)}${u==="pt"?" pt":""} vs model`};
+  $("#dw-bar").innerHTML=BUCKETS.map(b=>`<i style="width:${w[b.k]*100}%;background:${b.c}"></i>`).join("");
+  $("#dw-kpis").innerHTML=`<div><span>Expected return</span><b>${r.mu.toFixed(1)}%</b><em>${d(r.mu,rm.mu)}</em></div><div><span>Volatility</span><b>${r.sig.toFixed(1)}%</b><em>${d(r.sig,rm.sig)}</em></div><div><span>Sharpe</span><b>${isFinite(sh)?sh.toFixed(2):"—"}</b><em>${isFinite(sh)&&isFinite(shm)?d(sh,shm,"x"):""}</em></div><div><span>1-yr 95% downside</span><b>${var95.toFixed(1)}%</b><em>≈ ${money(val*var95/100)} on ${money(val,1)}</em></div>`;
+}
+function drawMatrix(){
+  const fits=Object.fromEntries(ranked.map(m=>[m.a.id,m.f]));
+  const rows=A.map(a=>({a,name:a.name,ret:a.ret,vol:a.vol,sharpe:a.vol>=1?(a.ret-RF)/a.vol:-9,liq:a.liq,min:a.min,fit:fits[a.id]}));
+  rows.sort((x,y)=>mxSort.k==="name"?x.name.localeCompare(y.name)*mxSort.d:(x[mxSort.k]-y[mxSort.k])*mxSort.d);
+  const cols=[["name","Investment"],["ret","Exp. return"],["vol","Volatility"],["sharpe","Sharpe"],["liq","Liquidity"],["min","Min"],["fit","Your fit"]];
+  $("#mx").innerHTML=`<thead><tr>${cols.map(([k,l])=>`<th scope="col"><button type="button" data-sort="${k}" ${mxSort.k===k?`aria-sort="${mxSort.d>0?"ascending":"descending"}"`:""}>${l}${mxSort.k===k?(mxSort.d>0?" ↑":" ↓"):""}</button></th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}</td><td>${r.ret.toFixed(1)}%</td><td>${r.vol}%</td><td>${r.sharpe>-9?r.sharpe.toFixed(2):"—"}</td><td>${LIQ_WORD[r.liq]}</td><td>${r.min<=1?"$1":money(r.min,1)}</td><td style="color:${fitColor(r.fit)}">${r.fit}</td></tr>`).join("")}</tbody>`;
+}
+function drawSizer(){
+  const a=A.find(x=>x.id===$("#sz-asset").value)||A[0];const val=Math.max(0,+$("#sz-val").value||0),bud=Math.max(0,+$("#sz-bud").value||0);
+  const w=Math.min(1,bud/Math.max(a.vol,.5));
+  $("#sz-out").innerHTML=`<span class="eyebrow">Max weight</span><b>${(w*100).toFixed(1)}% · ${money(val*w)}</b>A one-standard-deviation bad year (−${a.vol}%) would cost about ${money(val*w*a.vol/100)}, or ${(w*a.vol).toFixed(1)}% of the portfolio.${w>=1?" The budget exceeds this asset's volatility, so the cap is 100%.":""}`;
+}
+function renderDesk(){if(!dw)dw={...curAlloc};syncSliders();drawSpreads();drawBuilder();drawMatrix();drawSizer()}
+
+/* ---------- Level switching ---------- */
+function setLevel(l){
+  if(!LEVELS[l])return;level=l;try{localStorage.setItem(LV_KEY,l)}catch(e){}
+  document.body.dataset.level=l;
+  document.querySelectorAll("[data-show]").forEach(el=>el.hidden=!el.dataset.show.split(" ").includes(l));
+  document.querySelectorAll(".lvl-pick [data-lvl]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lvl===l)));
+  $("#lvl-sel").value=l;const qr=$("#q-lvl-"+l);if(qr)qr.checked=true;
+  $("#lvl-desc").textContent=LEVELS[l].desc;
+  gtip.hidden=true;
+  renderBoard();update();renderBrief();renderPrompts();
+  glossIn($("#basics"));
+}
+document.querySelector(".lvl-pick").addEventListener("click",e=>{const b=e.target.closest("[data-lvl]");if(b)setLevel(b.dataset.lvl)});
+$("#lvl-sel").addEventListener("change",e=>setLevel(e.target.value));
+
+/* ---------- Boot ---------- */
+buildQuiz();buildFilters();
+$("#in-start").value=AMT_VAL[+P.amt];
+renderPlan(profile());initDesk();
+setLevel(level);
+bootPro();
+(async()=>{try{sample=window.claude?await window.claude.use("sample"):null}catch(e){sample=null}if(!sample)disableAI()})();
+})();
+</script>
+</body>
+</html>
